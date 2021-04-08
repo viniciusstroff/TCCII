@@ -2,13 +2,16 @@
 
 namespace App\Console;
 
+//NPM exe lighthouse https://www.google.com.br
+
+//npm exe -c "lighthouse https://www.google.com.br/ --output=json --output-path ./app/console/outputs/myfile2.json"
 class Process
 {
     protected String $command;
     protected Int $timeout;
     protected $output;
     protected ?String $defaultPath = null;
-    protected ?String $defaultOutputPath = "./app/console/outputs/";
+    protected ?String $defaultOutputPath = "/app/console/outputs/";
     protected ?String $error = null;
     protected Bool $hasFinished = false;
     protected Bool $captureStdErr = true;
@@ -80,7 +83,14 @@ class Process
 
     public function getOutput(bool $removeSpaces = true)
     {
-        return $removeSpaces ? trim($this->output) : $this->output;
+        if(!is_array($this->output))
+            return $removeSpaces ? trim($this->output) : $this->output;
+      
+        $output = array_map(function($output, $removeSpaces){
+            return $removeSpaces ? trim($output) : $output;
+        }, $this->output, [$removeSpaces]);
+
+        return $output;
     }
 
     public function setPath(?String $path)
@@ -107,39 +117,28 @@ class Process
         return $this->hasFinished;
     }
 
-    public function execute()
+    public function execute(?String $command = null)
     {
        try{
-        //    $command = $this->getCommand();
-        exec("dir", $output, $this->exitCode);
+           if(!$this->command)
+                $this->command = $command;
+        
+            exec($this->command, $output, $this->exitCode);
 
-           dd($output);
-           return $this->output;
+            $this->output = $output;
        }catch(\Exception $e)
        {
            dd($e->getMessage());
        }
 
    }
-    public function execute2(String $command)
-     {
-        try{
-            $this->output = shell_exec("$command > ". $this->getDefaultOutputPath() . "teste.txt");
-            return $this->output;
-        }catch(\Exception $e)
-        {
-            dd($e->getMessage());
-        }
-
-    }
 
     public function run()
     {
+        
         try{
-            // $teste = $this->goTo('cd '. $this->getBasePath());
-            $teste2 = $this->execute('');
-            dd($teste2);
-            $this->output = shell_exec($this->command);
+            $teste2 = $this->execute($this->command);
+            
         }catch(\Exception $e)
         {
             dd($e->getMessage());

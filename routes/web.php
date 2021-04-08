@@ -3,7 +3,6 @@
 use App\Console\Process;
 use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
-use Symfony\Component\Process\Process as ProcessProcess;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,17 +16,13 @@ use Symfony\Component\Process\Process as ProcessProcess;
 */
 
 Route::get('/', function () {
-    $process = (new Process('dir'))->run();
-
+    
     // dd($process->getOutput());exit;
     // $teste = shell_exec("node ./../node_modules/lighthouse/lighthouse-cli/index.js https://www.google.com.br/ --output=json --output-path ./../saidas/myfile.json");
     // dd($teste);
-    $process = new ProcessProcess(['cd']);
+    $process = new Process('ls -la');
     $process->run();
     dd($process->getOutput());
-    // dd($process->getErrorOutput());exit;
-
-    // $lighthouse = new Lighthouse2([]);
     return view('welcome');
 });
 Route::resource('contacts', ContactController::class);
