@@ -16,13 +16,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    
-    // dd($process->getOutput());exit;
     // $teste = shell_exec("node ./../node_modules/lighthouse/lighthouse-cli/index.js https://www.google.com.br/ --output=json --output-path ./../saidas/myfile.json");
-    // dd($teste);
-    $process = new Process('ls -la');
+    $process = new Process('npm exe -c "lighthouse https://www.google.com.br/ --output=json --output-path ./../app/console/outputs/myfile23.json');
     $process->run();
-    dd($process->getOutput());
+    $process->getOutput();
     return view('welcome');
 });
 Route::resource('contacts', ContactController::class);

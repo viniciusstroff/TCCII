@@ -119,6 +119,7 @@ class Process
 
     public function execute(?String $command = null)
     {
+        
        try{
            if(!$this->command)
                 $this->command = $command;
