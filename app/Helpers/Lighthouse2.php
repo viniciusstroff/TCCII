@@ -1,45 +1,96 @@
 <?php
+namespace App\Helpers;
+
+use App\Console\Process;
 use App\Exceptions\AuditFailedException;
-use Symfony\Component\Process\Process;
 
 class Lighthouse2 {
     protected Array $sites = [];
     protected String $lighthousePath  = './../../node_modules/lighthouse/lighthouse-cli/index.js';
+    protected String $command = "node";
     protected ?String $nodePath = null;
     protected ?String $configPath = null;
     protected Array $outputFormat = ['--output=json'];
+    protected Array $outputPath = ['--output-path /app/console/outputs/'];
+    protected String $outputFile = "myfile23.json";
     protected Array $headers = [];
     protected Array $options = [];
     protected $config = null;
     protected Array $categories = [];
     protected $environmentVariables = [];
     protected $timeout = 60;
+    protected $defaultFormat;
+
 
     protected Array $availableFormats = ['json', 'html'];
 
+    public $process;
 
-    public function __construct(array $sites)
+
+    public function __construct(Array $sites)
     {
+        // dd(getcwd());
         $this->sites = $sites;
+        $this->setOutput(base_path().'/app/console/outputs/');
+        $this->setNodePath();
+        // $this->audit();
+    }
 
-        // $this->setOutput('./saidas/report.json');
-        $this->audit('https://www.google.com');
+    public function setNodePath(){
+        $this->nodePath = base_path().'/node_modules/lighthouse/lighthouse-cli/index.js';
+    }
+
+    public function setCommand(String $url)
+    {
+
+        $outputFormat = implode(' ',$this->outputFormat);
+        $options = implode(' ', $this->getOptions());
+
+        $command = "{$this->command} {$this->nodePath} {$url} {$outputFormat} {$options}";
+
+        $this->command = $command;
+    }
+
+    public function getOptions() : Array
+    {
+        if(!empty($this->options))
+            return array_values($this->options);
     }
 
 
-    public function audit(String $url){
-        // $process = new Process(['node '.$this->lighthousePath, 'https://www.google.com']);
+
+    public function audit()
+    {
+        // foreach($this->sites as $url){
+
+            $this->setCommand('https://www.google.com.br/');
+            // $path = base_path(). '/app/console/outputs/myfile23.json';
+            // dd($this->command, "npm exec -c 'lighthouse https://www.google.com.br/ --output=json --output-path {$path}' ");
+
+            // $process = new Process(['npm exe -c "lighthouse https://www.google.com.br/ --output=json --output-path '. $path]);
+
+            // $process->run();
+            $this->process = new Process([$this->command]);
+            $this->process->run();
+            if($this->process->hasError()){
+                // throw new AuditFailedException($url, $process->getErrorOutput());
+                dd('erro');
+            }
+            // $process->getOutput();
 
 
-        $process = new Process(["node C:/Desenvolvimento/vinicius/Projeto-TCCII/TCCII/node_modules/lighthouse/lighthouse-cli/index.js 'www.google.com' --output json --output-path C:/Desenvolvimento/vinicius/Projeto-TCCII/TCCII/saidas/myfile.json"]);
-        $process->run();
-        dd($process->getErrorOutput());exit;
-        $process->setTimeout($this->timeout)->run(null, $this->environmentVariables);
-        if (!$process->isSuccessful()) {
-            throw new AuditFailedException($url, $process->getErrorOutput());
-        }
+            // dd();
+            // dd($process->getErrorOutput());exit;
+            // $process->setTimeout($this->timeout)->run(null, $this->environmentVariables);
+            // if (!$process->isSuccessful()) {
+            //     throw new AuditFailedException($url, $process->getErrorOutput());
+            // }
 
-        return $process->getOutput();
+            // return $process->getOutput();
+
+
+        // }
+        return $this;
     }
 
     public function getCommand(String $url)
@@ -97,39 +148,23 @@ class Lighthouse2 {
         }, $this->options, array_keys($this->options));
     }
 
-    public function setOutput($path, $format = null)
+    public function setOutput(String $path)
     {
-        $this->setOption('--output-path', $path);
-
-        if ($format === null) {
-            $format = $this->guessOutputFormatFromFile($path);
-        }
-
-        if (!is_array($format)) {
-            $format = [$format];
-        }
-
-        $format = array_intersect($this->availableFormats, $format);
-
-        $this->outputFormat = array_map(function ($format) {
-            return "--output=$format";
-        }, $format);
-
-        return $this;
+        $path = str_replace(["\\", "//"], "/", $path);
+        $this->setOption('--output-path', $path.$this->outputFile);
     }
 
-    public function setOption($option, $value = null)
-    {
+    public function setOption(String $option, String $value){
+
         if (($foundIndex = array_search($option, $this->options)) !== false) {
             $this->options[$foundIndex] = $option;
-
             return $this;
         }
 
         if ($value === null) {
-            $this->options[] = $option;
+            $this->options[] = "{$option}";
         } else {
-            $this->options[$option] = $value;
+            $this->options[$option] = "{$option} {$value}";
         }
 
         return $this;

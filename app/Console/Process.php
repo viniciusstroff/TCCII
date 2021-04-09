@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use Illuminate\Support\Facades\Log;
+
 //NPM exe lighthouse https://www.google.com.br
 
 //npm exe -c "lighthouse https://www.google.com.br/ --output=json --output-path ./app/console/outputs/myfile2.json"
@@ -9,21 +11,29 @@ class Process
 {
     protected String $command;
     protected Int $timeout;
-    protected $output;
+    protected Array $output;
     protected ?String $defaultPath = null;
-    protected ?String $defaultOutputPath = "/app/console/outputs/";
+    protected ?String $defaultOutputPath = "/app/console/outputs/myfile23.json";
     protected ?String $error = null;
     protected Bool $hasFinished = false;
+    protected Bool $hasError = false;
     protected Bool $captureStdErr = true;
     protected ?Int $exitCode = null;
+    protected String $outputFilename = "myfile23.json";
 
-    public function __construct(String $command, ?Array $arguments = [])
+    public function __construct(Array $commands, ?Array $arguments = [])
     {
-        $this->command = $command;
-
+        $this->constructCommandByArray($commands);
         $this->setDefaultPath();
-        $this->setDefaultOutputPath('');
-        $this->setArguments($arguments);
+        // $this->setDefaultOutputPath('');
+        // $this->setArguments($arguments);
+    }
+
+    private function constructCommandByArray(Array $commands)
+    {
+        if(empty($commands)) return;
+
+        $this->command =  implode(" ", $commands);
     }
 
     public function setTimeout(Int $timeout = 60)
@@ -51,7 +61,7 @@ class Process
 
         $command = $this->getCommand();
         if (!$command) {
-            $this->error = 'Could not locate any executable command';
+            $this->setError('Could not locate any executable command');
             return false;
         }
 
@@ -83,14 +93,30 @@ class Process
 
     public function getOutput(bool $removeSpaces = true)
     {
-        if(!is_array($this->output))
-            return $removeSpaces ? trim($this->output) : $this->output;
-      
-        $output = array_map(function($output, $removeSpaces){
-            return $removeSpaces ? trim($output) : $output;
-        }, $this->output, [$removeSpaces]);
+        if($this->hasFinished()){
 
-        return $output;
+            $file = $this->defaultPath. $this->defaultOutputPath;
+            // dd($file);
+            if(file_exists($file)){
+
+                $teste = file_get_contents($file);
+                dd($teste);
+            }
+            if($this->hasError()) return $this->getError();
+
+            if(!is_array($this->output))
+                return $removeSpaces ? trim($this->output) : $this->output;
+
+            $output = array_map(function($output, $removeSpaces){
+                return $removeSpaces ? trim($output) : $output;
+            }, $this->output, [$removeSpaces]);
+
+
+            if(is_null($output)){
+
+            }
+            return $output;
+        }
     }
 
     public function setPath(?String $path)
@@ -98,13 +124,15 @@ class Process
         $this->defaultPath = base_path($path);
     }
 
-    public function goTo(?String $path) {
+    public function goTo(?String $path)
+    {
         $this->output = $this->execute("cd $path");
     }
 
-    public function getError($escapeSpaces = true)
+    public function getError($escapeSpaces = true): String
     {
-        return $escapeSpaces ? trim($this->error) : $this->error;
+        if(!$this->hasError())
+            return $escapeSpaces ? trim($this->error) : $this->error;
     }
 
     public function setHasFinished(bool $done = true)
@@ -117,32 +145,44 @@ class Process
         return $this->hasFinished;
     }
 
+    public function hasError(): Bool
+    {
+        return $this->hasError;
+    }
+
+    public function setError(String $error)
+    {
+        $this->error = $error;
+        dd($this->error);
+    }
+
     public function execute(?String $command = null)
     {
-        
+
        try{
+            $output=null;
            if(!$this->command)
                 $this->command = $command;
-        
-            exec($this->command, $output, $this->exitCode);
 
+            // dd($this->command);
+            exec($this->command, $output, $this->exitCode);
             $this->output = $output;
-       }catch(\Exception $e)
+            $this->setHasFinished(true);
+       }catch(\Exception $exception)
        {
-           dd($e->getMessage());
+           $this->setError($exception->getMessage());
        }
 
    }
 
     public function run()
     {
-        
+
         try{
-            $teste2 = $this->execute($this->command);
-            
-        }catch(\Exception $e)
-        {
-            dd($e->getMessage());
+            $this->execute($this->command);
+
+        } catch(\Exception $exception){
+            $this->setError($exception->getMessage());
         }
     }
 
