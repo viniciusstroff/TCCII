@@ -10,3 +10,4 @@ para rodar o projeto
 - alterar os dados do .env para um banco de dados local
 - php artisan migrate
 - php artisan serve
+- php artisan key:generate.

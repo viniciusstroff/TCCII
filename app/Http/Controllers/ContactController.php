@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\Lighthouse;
 use App\Models\Contact;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ContactController extends Controller
 {
@@ -16,8 +16,6 @@ class ContactController extends Controller
     public function index()
     {
         $contacts = Contact::all();
-
-        $lighthouse = (new Lighthouse([]));
 
         return view('contacts.index', compact('contacts'));
     }

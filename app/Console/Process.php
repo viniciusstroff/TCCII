@@ -3,29 +3,29 @@
 namespace App\Console;
 
 use Illuminate\Support\Facades\Log;
+use Spatie\Async\Pool;
 
 //NPM exe lighthouse https://www.google.com.br
 
 //npm exe -c "lighthouse https://www.google.com.br/ --output=json --output-path ./app/console/outputs/myfile2.json"
 class Process
 {
+    protected Int $id;
     protected String $command;
     protected Int $timeout;
     protected Array $output;
-    protected ?String $defaultPath = null;
-    protected ?String $defaultOutputPath = "/app/console/outputs/myfile23.json";
     protected ?String $error = null;
     protected Bool $hasFinished = false;
     protected Bool $hasError = false;
     protected Bool $captureStdErr = true;
     protected ?Int $exitCode = null;
-    protected String $outputFilename = "myfile23.json";
+    protected Bool $isRunning = false;
+    protected String $starttime;
 
     public function __construct(Array $commands, ?Array $arguments = [])
     {
         $this->constructCommandByArray($commands);
-        $this->setDefaultPath();
-        // $this->setDefaultOutputPath('');
+        // $this->setTimeout();
         // $this->setArguments($arguments);
     }
 
@@ -38,17 +38,8 @@ class Process
 
     public function setTimeout(Int $timeout = 60)
     {
+        ini_set('max_execution_time', $timeout);
         $this->timeout = $timeout;
-    }
-
-    private function setDefaultOutputPath(?String $path = '')
-    {
-        $this->defaultOutputPath = $this->defaultPath . $this->defaultOutputPath;
-    }
-
-    public function getDefaultOutputPath() : String
-    {
-        return $this->defaultOutputPath;
     }
 
     public function getCommand() : String
@@ -56,24 +47,18 @@ class Process
         return $this->command;
     }
 
+
+    public function getExitCode() : Int 
+    {
+        return $this->exitCode;
+    }
     public function getExecCommand() : String
     {
 
         $command = $this->getCommand();
-        if (!$command) {
-            $this->setError('Could not locate any executable command');
-            return false;
-        }
 
         $args = $this->getArguments();
-        return $args ? $command.' '.$args : $command;
-    }
-
-    private function setDefaultPath(?String $path = '')
-    {
-        $basePath = base_path($path);
-        $basePath = str_replace(["\\", "//"], "/", $basePath);
-        $this->defaultPath = $basePath;
+        return $args ? "{$command} {$args}" : $command;
     }
 
     public function setArguments(Array $arguments)
@@ -86,22 +71,10 @@ class Process
         return implode(' ',$this->arguments);
     }
 
-    public function getBasePath(): String
-    {
-        return $this->defaultPath;
-    }
-
     public function getOutput(bool $removeSpaces = true)
     {
         if($this->hasFinished()){
 
-            $file = $this->defaultPath. $this->defaultOutputPath;
-            // dd($file);
-            if(file_exists($file)){
-
-                $teste = file_get_contents($file);
-                dd($teste);
-            }
             if($this->hasError()) return $this->getError();
 
             if(!is_array($this->output))
@@ -111,22 +84,8 @@ class Process
                 return $removeSpaces ? trim($output) : $output;
             }, $this->output, [$removeSpaces]);
 
-
-            if(is_null($output)){
-
-            }
             return $output;
         }
-    }
-
-    public function setPath(?String $path)
-    {
-        $this->defaultPath = base_path($path);
-    }
-
-    public function goTo(?String $path)
-    {
-        $this->output = $this->execute("cd $path");
     }
 
     public function getError($escapeSpaces = true): String
@@ -156,18 +115,44 @@ class Process
         dd($this->error);
     }
 
+    public function setProcessId(Int $pid)
+    {
+        $this->id = $pid;
+    }
+
     public function execute(?String $command = null)
     {
 
        try{
-            $output=null;
-           if(!$this->command)
-                $this->command = $command;
 
+            if(!$this->command)
+                $this->command = $command;
+            
+
+            
+            $pool = Pool::create();    
+            // $this->isRunning = true;
+            // $this->command .=  "  2>dev/null >&- <&- >/dev/null &";
             // dd($this->command);
-            exec($this->command, $output, $this->exitCode);
-            $this->output = $output;
-            $this->setHasFinished(true);
+            $pool->add(function(){
+                $this->isRunning = true;
+                if (substr(php_uname(), 0, 7) == "Windows"){
+                    pclose(popen("start /B ". $this->command , "r")); 
+                }
+                else {
+                    exec($this->command . " > /dev/null &", $output, $this->exitCode);  
+                    
+                    $this->output = $output;
+                }
+            })->then(function($output){
+                
+            })->catch(function($exception){
+                dd($exception);
+            });
+
+            $results = await($pool);
+            $this->isRunning = false;
+            return $results;
        }catch(\Exception $exception)
        {
            $this->setError($exception->getMessage());
@@ -175,11 +160,33 @@ class Process
 
    }
 
+    public function setStartTime()
+    {
+        $this->startTime = time();
+    }
+
+    public function isOverTime()
+    {
+        return (time() - $this->startTime) > $this->timeout;
+    }
+
     public function run()
     {
 
         try{
-            $this->execute($this->command);
+            $this->setStartTime();
+
+            $pool = Pool::create();
+            
+            $pool->add(function(){
+
+                $result = $this->execute($this->command);
+                return $result;
+            });
+            
+            $results = await($pool);
+
+            return $results;
 
         } catch(\Exception $exception){
             $this->setError($exception->getMessage());

@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\TesteController;
+use App\Http\Controllers\Api\Audits\LighthouseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,10 +15,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
+// Route::middleware('auth:api')->group( function () {
+    
+// });
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
 
-Route::get('/teste', [TesteController::class, 'index']);
+Route::middleware('api')->group(function () {
+    Route::apiResource('lighthouse', LighthouseController::class);
+});
+
 
