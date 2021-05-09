@@ -1,21 +1,25 @@
-// import App from "./components/App.vue";
-import AddPost from "./components/AddPost.vue";
 
-export const routes = [
-    // {
-    //     name: 'home',
-    //     path: '/',
-    //     component: AllProduct
-    // },
-    {
-        name: 'create',
-        path: '/store',
-        component: AddPost
-    }
-    // ,
-    // {
-    //     name: 'edit',
-    //     path: '/edit/:id',
-    //     component: EditProduct
-    // }
-];
+import Vue from 'vue'
+import Router from 'vue-router'
+Vue.use(Router)
+import exampleMainPage from './exampleMainPage';
+import ExampleRoutes from '../../app/Modules/Example/Vue/js/router'
+
+// const initialRoutes = [
+//     {path: '/example-main-page', name: 'test', component: exampleMainPage}
+// ]
+
+// var routes = []
+// routes = routes.concat(
+//     initialRoutes,
+//     ExampleRoutes
+
+// )
+
+
+
+// export default new Router({
+//     mode: 'history',
+//     routes
+
+// })

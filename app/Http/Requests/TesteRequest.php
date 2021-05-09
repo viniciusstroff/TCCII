@@ -24,7 +24,8 @@ class TesteRequest extends FormRequest
     public function rules()
     {
         return [
-            'site' => 'required|url|max:100'
+            'site' => 'required|url|max:100',
+            'tool_name' => 'required'
         ];
     }
 
@@ -32,8 +33,7 @@ class TesteRequest extends FormRequest
     {
         return [
             'sites.required' => 'Preencha pelo menos um site!',
-            'name.required' => 'Name is required!',
-            'password.required' => 'Password is required!'
+            'tool_name.required' => 'Tool is required!',
         ];
     }
 }

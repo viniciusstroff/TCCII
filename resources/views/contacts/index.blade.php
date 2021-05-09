@@ -2,7 +2,8 @@
 
 @section('main')
 
-<div class="row" id="app">
+<div class="row">
+    <example-component></example-component>
 <div class="col-sm-12">
     <div class="col-sm-12">
 
@@ -14,7 +15,7 @@
       </div>
     <h1 class="display-3">Contacts</h1>
 
-    
+
   <table class="table table-striped">
     <thead>
         <div>
@@ -53,93 +54,8 @@
         @endforeach
     </tbody>
   </table>
-
-  <form method="post" id='testeForm'>
-          @csrf
-          <div class="form-group">
-              <label for="sites">Sites:</label>
-              <input type="text" class="form-control" name="sites" />
-          </div>
-
-         
-
-          
-          <div class="form-group">
-            <label for="exampleFormControlSelect2">Escolha qual será a ferramenta de análise</label>
-            <select multiple class="form-control" id="exampleFormControlSelect2">
-              <option>Lighthouse</option>
-              <option>WAVE</option>
-            </select>
-          </div>
-
-          <div class="form-check">
-          
-            <input type="checkbox" class="form-check-input" name="last_name"/>
-            <label class="form-check-label" for="last_name">Salvar os resultados para consultar depois?</label>
-          </div>
-
-
-          <button type="submit" class="btn btn-primary">Update</button>
-
-  </form>
-
-  <button class="btn btn-primary" data-id="audit-lighthouse" type="submit">Audit</button>
-<div>
 </div>
+
+
 @endsection
-
-
-<script>
-// document.addEventListener("DOMContentLoaded", function () {
-// });
-
-
-const urlBase =  'http://localhost:8000/api/teste'
-
-async function audit(sites)
-{ 
- console.log('isso pode demorar um pouco')
-  await fetch(urlBase)
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(function(err){
-      console.log(err)
-    });
-}
-
-
-
-
-
-document.addEventListener('submit', function (event) {
-  event.preventDefault();
-
-  const inputs = event.target.elements
-  teste(inputs)
-
-});
-
-
-async function teste(request)
-{
-
-  const sites = request['sites'].value
-
-  const rawReponse = await fetch(urlBase, {
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    method: 'POST',
-    body: JSON.stringify({sites: [sites]})
-  })
-  const content = await rawReponse.json();
-
-  if(content.message){
-    console.log('erro')
-  }
-  console.log(content)
-}
-
-</script>
 

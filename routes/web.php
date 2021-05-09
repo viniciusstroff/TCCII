@@ -21,8 +21,10 @@ Route::get('/', function () {
 });
 Route::resource('contacts', ContactController::class);
 
-Auth::routes();
+// Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::resource('audits', AuditController::class);
+Route::get('audits/', function () {
+    return view('audits.index');
+});

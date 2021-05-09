@@ -10,28 +10,31 @@
         "production": "mix --production"
     },
     "devDependencies": {
+        "@babel/core": "^7.14.0",
+        "@babel/preset-env": "^7.14.1",
         "axe-core": "^4.2.0",
         "axios": "^0.21",
-        "babel": "^5.8.23",
-        "babel-core": "^5.0.0",
-        "babel-loader": "^5.3.2",
-        "bootstrap": "^4.0.0",
-        "jquery": "^3.2",
+        "babel-loader": "^8.2.2",
+        "bootstrap": "^4.6.0",
+        "jquery": "^3.6",
         "laravel-mix": "^6.0.6",
         "lighthouse": "^7.3.0",
         "lodash": "^4.17.19",
-        "popper.js": "^1.12",
+        "popper.js": "^1.16.1",
         "postcss": "^8.1.14",
-        "resolve-url-loader": "^2.3.1",
-        "sass": "^1.20.1",
-        "sass-loader": "^8.0.0",
-        "tokenfield": "^1.4.4",
-        "vue": "^2.5.17",
-        "vue-loader": "^15.9.5",
-        "vue-template-compiler": "^2.6.10"
+        "resolve-url-loader": "^3.1.2",
+        "sass": "^1.32.11",
+        "sass-loader": "^11.0.1",
+        "vue": "^2.6.12",
+        "vue-axios": "^3.2.4",
+        "vue-loader": "^15.9.6",
+        "vue-router": "^3.5.1",
+        "vue-template-compiler": "^2.6.12",
+        "vuex": "^3.6.0",
+        "webpack": "^5.36.2"
     },
     "dependencies": {
-        "vue-axios": "^3.2.4",
-        "vue-router": "^3.5.1"
+        "bootstrap-icons": "^1.4.1",
+        "bootstrap-vue": "^2.21.2"
     }
 }

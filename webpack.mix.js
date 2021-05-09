@@ -1,5 +1,4 @@
 const mix = require('laravel-mix');
-const token = require('tokenfield');
 
 /*
  |--------------------------------------------------------------------------
@@ -15,4 +14,3 @@ const token = require('tokenfield');
 mix.js('resources/js/app.js', 'public/js')
     .vue()
     .sass('resources/sass/app.scss', 'public/css');
-

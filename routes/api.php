@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\Api\Audits\AuditController;
 use App\Http\Controllers\Api\Audits\LighthouseController;
+use App\Http\Controllers\Api\ReportPendingController;
+use App\Http\Controllers\Api\ReportController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 
 
 // Route::middleware('auth:api')->group( function () {
-    
+
 // });
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
@@ -26,6 +29,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::middleware('api')->group(function () {
     Route::apiResource('lighthouse', LighthouseController::class);
+    Route::apiResource('audits', AuditController::class);
+    Route::apiResource('reports-pending', ReportPendingController::class);
+    Route::apiResource('reports', ReportController::class);
 });
 
 

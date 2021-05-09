@@ -8,8 +8,8 @@ use App\Http\Controllers\Api\BaseApiController;
 use App\Http\Requests\TesteRequest;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
-use Spatie\Async\Pool;
 use Throwable;
+use Spatie\Async\Pool;
 
 class LighthouseController extends BaseApiController
 {
@@ -31,27 +31,29 @@ class LighthouseController extends BaseApiController
             // // if($lightouse->hasFinished()){
             //     $data = $this->lighthouse->getOutput();
 
-
                 return response(['project' => [], 'message' => 'Retrieved successfully'], 200);
             // }
-            
+
         }catch( \Exception $exception){
             $this->sendError($exception->getMessage());
         }
     }
 
     public function store(TesteRequest $request)
-    {   
+    {
 
         $data = $request->all();
-        
+
         $pool = Pool::create();
         $sites[] = $data['site'];
         $sites[] = 'https://www.sinonimos.com.br';
+
+
+
         foreach ($sites as $site) {
             $lighthouse = new Lighthouse($site);
             $pool->add(function () use($lighthouse) {
-               
+
                 $lighthouse->setCategories(['accessibility', 'performance']);
                 $lighthouse->audit();
             })->then(function () use($lighthouse, $pool){
@@ -63,17 +65,17 @@ class LighthouseController extends BaseApiController
                 return $this->sendError("ERRO", $exception->getMessage());
             });
         }
-        
+
         $results = await($pool);
         // dd($results);
         // if(!$this->lighthouse->isRunning()){
-        
+
         return $this->sendResponse("resultado pendente", "A audição está sendo executada...");
         // }
-       
-        
 
-        
+
+
+
         // dd($this->lighthouse->getOutput());
 
     }

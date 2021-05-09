@@ -11,3 +11,9 @@ para rodar o projeto
 - php artisan migrate
 - php artisan serve
 - php artisan key:generate.
+
+
+dev
+
+- npm run watch
+- php artisan serve
