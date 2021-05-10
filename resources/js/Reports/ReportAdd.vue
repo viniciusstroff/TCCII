@@ -1,0 +1,59 @@
+<template>
+    <div>
+      <report-form @sites="getSites($event)"></report-form>
+      <b-pagination v-model="table.currentPage" :per-page="table.perPage" :total-rows="sites.length"></b-pagination>
+      <b-table :items="sites" :per-page="table.perPage" 
+        :fields="table.fields"
+        striped
+        small
+        :current-page="table.currentPage">
+      </b-table>
+      
+      <b-button type="submit" variant="primary" @click="saveReports()">Salvar</b-button>
+      <b-button type="reset" variant="danger">Limpar</b-button>
+      <router-link data-toggle="collapse" :to="{ path: 'reports' }">
+        <b-button variant="primary">
+            Voltar
+        </b-button>
+      </router-link>    
+    </div>
+</template>
+
+<script>
+import ReportForm from './ReportForm.vue'
+  export default {
+  components: { ReportForm },
+    data() {
+      return {
+        loading: false,
+        table: {
+          perPage: 5,
+          currentPage: 1,
+          fields: [
+            {key: 'url',  label: 'Site', sortable: true },
+            {key: 'tool_name',  label: 'Ferramenta', sortable: true }
+          ]
+        },
+        sites: []
+      }
+    },
+    methods: {
+      saveReports()
+      {
+        axios.post('http://localhost:8000/api/reports/', { sites: this.sites })
+        .then(response => (
+            this.$router.push({path: 'reports'})
+            // console.log(response.data)
+        ))
+        .catch(error => console.log(error))
+        .finally(() =>
+         this.loading = false)
+      },
+      
+      getSites(sites)
+      {
+        this.sites = sites
+      }
+    }
+  }
+</script>

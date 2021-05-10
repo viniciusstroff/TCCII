@@ -24,16 +24,24 @@ class ReportRequest extends FormRequest
     public function rules()
     {
         return [
-            'sites.*' => 'required|url|max:100',
-            'tool_name' => 'required'
+            'sites.*' => 'required|array|max:100',
+            'sites.*.url' => 'required|url|max:100',
+            'sites.*.tool_name' => 'required|max:100',
+
         ];
     }
 
     public function messages()
     {
         return [
-            'sites.required' => 'Preencha pelo menos um site!',
-            'tool_name.required' => 'Tool is required!',
+            'sites.*.required' => 'Preencha pelo menos um site!',
+            'sites.*.url' => [
+                'required' => 'Campo Obrigatório',
+                'url' => 'Formato inválido'
+            ],
+            'sites.*.tool_name' => [
+                'required' => 'Campo Obrigatório'
+            ],
         ];
     }
 }

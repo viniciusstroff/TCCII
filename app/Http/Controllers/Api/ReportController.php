@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 
 use App\Http\Requests\ReportPendingRequest;
+use App\Http\Requests\ReportRequest;
 use App\Repository\Interfaces\Report\ReportRepositoryInterface;
 use App\Repository\Interfaces\ReportPending\ReportPendingRepositoryInterface;
 use Illuminate\Http\Request;
@@ -37,11 +38,11 @@ class ReportController extends BaseApiController
 
     }
 
-    public function store(ReportPendingRequest $request)
+    public function store(ReportRequest $request)
     {
         try
         {
-            $request = $request->only(['sites', 'tool_name']);
+            $request = $request->only(['sites']);
 
             $reportPending = $this->reportRepository->save($request);
         } catch (\Exception $e) {

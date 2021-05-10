@@ -1,11 +1,18 @@
 <template>
     <div>
-        <h3 class="text-center">Add Post</h3>
         <div class="row">
             <div class="col-md-12">
                 <div class="overflow-auto">
-                     {{reports.length}}
+                    
+                    <router-link
+                    data-toggle="collapse"
+                    :to="{ path: 'report' }">
+                        <b-button variant="primary">
+                            Adicionar
+                        </b-button>
+                    </router-link>
 
+                
                     <p class="mt-3">Current Page: {{ currentPage }}</p>
                     <b-form>
                         <b-row>
@@ -74,7 +81,6 @@
 
             async getReports(){
                 try{
-                    console.log('aqui')
                     const response = await axios.get('http://localhost:8000/api/reports/').then(response => (this.info = response))
                     this.reports = await response.data.data
                 }catch (err){

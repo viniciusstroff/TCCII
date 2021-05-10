@@ -1,25 +1,23 @@
+import ReportList from './Reports/ReportList';
+import ReportAdd from './Reports/ReportAdd';
+import Example from './components/ExampleComponent'
 
-import Vue from 'vue'
-import Router from 'vue-router'
-Vue.use(Router)
-import exampleMainPage from './exampleMainPage';
-import ExampleRoutes from '../../app/Modules/Example/Vue/js/router'
+const routes = [
+    {
+        path: '/',
+        name: 'home',
+        component: Example
+    },
+    {
+        path: '/reports',
+        name: 'reports list',
+        component: ReportList
+    },
+    {
+        path: '/report',
+        name: 'report add',
+        component: ReportAdd
+    }
+];
 
-// const initialRoutes = [
-//     {path: '/example-main-page', name: 'test', component: exampleMainPage}
-// ]
-
-// var routes = []
-// routes = routes.concat(
-//     initialRoutes,
-//     ExampleRoutes
-
-// )
-
-
-
-// export default new Router({
-//     mode: 'history',
-//     routes
-
-// })
+export default routes

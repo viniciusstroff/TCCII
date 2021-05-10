@@ -37,12 +37,13 @@ class ReportRepository extends BaseRepository implements ReportRepositoryInterfa
     {
         try{
             $sites = $request['sites'];
-
+            
             foreach ($sites as $site)
             {
+                dd($site);
                 $this->report = $this->factory->getInstance(Report::class);
-                $this->report->tool_name = $request['tool_name'];
-                $this->report->site = $site;
+                $this->report->tool_name = $site->tool_name;
+                $this->report->site = $site->site;
                 $this->report->file_format = 'json';
                 $this->report->file_fake_name = "$site.json";
                 $this->report->file_name = uniqid ();
