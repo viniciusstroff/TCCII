@@ -1,0 +1,65 @@
+
+O usuario entra no sistema
+
+Cadastra uma ou mais AUDIÇOES(reports)
+
+entao entra pra fila de AUDIÇÔES PENDENTES (reports_pending)
+
+
+quando terminar de executar da fila o status is_finished passa pra true(1) "saindo da fila"
+
+
+e salvando a PONTUAÇÂO adiquirida na AUDIÇÂO na tabela SCORES 
+
+
+
+-----------------
+REPORTS |
+-----------------
+
+id                       1
+tool_name                wave
+site                     google.com
+
+=====================================
+
+id                       2
+tool_name                lighthouse
+site                     google2.com
+
+
+-----------
+REPORTS_PENDING:  |
+-----------
+id: 1
+is_finished: false
+report_id: 1
+
+
+--------------
+SCORES       |
+--------------
+id:                 2
+performance:        87
+report_id:          1
+
+
+
+id:                 1
+performance:        90
+report_id:          2
+
+
+
+
+
+SCORE_HISTORIES
+
+id:                 312
+score_id:             2
+report_id:            1
+
+
+id:                    32312312
+score_id:              3
+report_id              1

@@ -42,8 +42,8 @@ class ReportController extends BaseApiController
     {
         try
         {
+            
             $request = $request->only(['sites']);
-
             $reportPending = $this->reportRepository->save($request);
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage());
@@ -55,13 +55,19 @@ class ReportController extends BaseApiController
 
     public function show($id)
     {
-        //
+        try{
+            $report = $this->reportRepository->find($id);
+            
+        } catch (\Exception $e){
+            return $this->sendResponse("Erro", "{$e->getMessage()}");
+        }
+        return $this->sendResponse($report, "Relatório salvo com sucesso");
     }
 
 
     public function edit($id)
     {
-
+        
     }
 
 

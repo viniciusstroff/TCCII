@@ -9,7 +9,7 @@
         :current-page="table.currentPage">
       </b-table>
       
-      <b-button type="submit" variant="primary" @click="saveReports()">Salvar</b-button>
+      <b-button type="button" variant="primary" @click="saveReports()">Salvar</b-button>
       <b-button type="reset" variant="danger">Limpar</b-button>
       <router-link data-toggle="collapse" :to="{ path: 'reports' }">
         <b-button variant="primary">
@@ -42,12 +42,12 @@ import ReportForm from './ReportForm.vue'
       {
         axios.post('http://localhost:8000/api/reports/', { sites: this.sites })
         .then(response => (
-            this.$router.push({path: 'reports'})
-            // console.log(response.data)
+            console.log(response.data)
         ))
         .catch(error => console.log(error))
         .finally(() =>
          this.loading = false)
+        //  this.$router.push({path: 'reports'})
       },
       
       getSites(sites)

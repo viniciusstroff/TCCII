@@ -8,4 +8,6 @@ interface ReportRepositoryInterface {
 
     public function all();
     public function save(Array $request);
+    public function getPendingReports();    
+    public function find($id);
 }

@@ -1,6 +1,13 @@
 <template>
     <div>
-      <b-form @submit="onSubmit" @reset="onReset" v-if="show">
+      <div v-show="hasError">
+        <b-alert  show fade variant="danger" class="small">
+          <h5 v-show="hasError">Probemas nas informações preenchidas no formulário</h5>
+          <p v-for="error in errors" :key="error"><strong>*</strong> {{error}}</p>
+        </b-alert>
+      </div>
+    
+      <b-form @reset="onReset" v-if="show">
           <b-row>
             <b-col sm="6">
             <b-form-group
@@ -62,6 +69,8 @@ export default {
         tool: '',
         checked: []
       },
+      errors: [],
+      hasError: false,
       data: {
         sites: [],
       },
@@ -72,15 +81,49 @@ export default {
       show: true
     }
   },
+  created(){
+    console.log('aqui2')
+    this.getData()
+  },
+  mounted(){
+    console.log('aqui')
+    this.getData()
+  },
+
   methods: {
-    onSubmit(event) {
-      event.preventDefault()
-      alert(JSON.stringify(this.form))
+    async getData(){
+      const reportId = this.$route.params.reportId
+
+      if(!reportId) return
+
+      const response = await axios.get('http://localhost:8000/api/reports/' + reportId).then(response => (this.info = response))
+      const data = await response.data.data
+      this.form.site = data.site
+      this.form.tool = data.tool_name 
+    },
+    
+    setError(message){
+      this.errors.push(message);
+    },
+    
+    validate(){
+      this.errors = [];
+      //  this.hasError = false
+
+      if(!this.form.site)
+        this.setError('O campo Site é obrigatório.');
+      if(!this.form.tool)
+        this.setError('O campo Ferramenta é obrigatória.');
+      
+      const isValid = (this.errors.length > 0 ) ? false : true
+      this.hasError = !isValid
+      return isValid
     },
 
     onReset(event) {
       event.preventDefault()
       this.form = {}
+      this.data.sites = []
       this.show = false
       this.$nextTick(() => {
         this.show = true
@@ -88,6 +131,13 @@ export default {
     },
 
     addSite() {
+      console.log(this.errors)
+      if(!this.validate()){
+          console.log(this.errors)
+          return
+      }
+        
+
       const site = { url: this.form.site, tool_name: this.form.tool }
       this.data.sites.push(site)
       this.data.sites.reverse()

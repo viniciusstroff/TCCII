@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div >
         <div class="row">
             <div class="col-md-12">
                 <div class="overflow-auto">
@@ -26,9 +26,9 @@
                                 <b-form-input
                                 id="input-1"
                                 v-model="search"
-                                type="text"
+                                type="search"
                                 class="mb-2 mr-sm-2 mb-sm-0"
-                                placeholder="Enter email"
+                                placeholder="Procure"
                                 ></b-form-input>
                             <!-- </b-form-group> -->
                         </b-col>
@@ -45,7 +45,25 @@
                         :per-page="perPage"
                         :current-page="currentPage"
                         striped
+                        :busy="isBusy"
+                        :filter="search"
+                        :filter-included-fields="filterOn"
                         small>
+                        <template #table-busy>
+                            <div class="text-center text-danger my-2">
+                            <b-spinner class="align-middle"></b-spinner>
+                            <strong>Carregando os dados...</strong>
+                            </div>
+                        </template>
+                        <template #cell(options)="row">
+                             <router-link
+                                data-toggle="collapse"
+                                :to="{ path: `report/${row.item.id}` }">
+                                    <b-button variant="primary" size="sm">
+                                        Editar {{row.item.id}}
+                                    </b-button>
+                            </router-link>
+                        </template>
                     </b-table>
 
                 </div>
@@ -68,8 +86,11 @@
                     {key: 'id', label: 'ID', sortable: true },
                     {key: 'file_name', label: 'Nome do Arquivo', sortable: true },
                     {key: 'site',  label: 'Site', sortable: true },
-                    {key: 'tool_name', label: 'Ferramenta', sortable: true }
-                ]
+                    {key: 'tool_name', label: 'Ferramenta', sortable: true },
+                    {key: 'options', label: 'Opções'}
+                ],
+                isBusy: false,
+                filterOn: []
 
 
             }
@@ -80,12 +101,14 @@
         methods: {
 
             async getReports(){
+                this.isBusy = true;
                 try{
                     const response = await axios.get('http://localhost:8000/api/reports/').then(response => (this.info = response))
                     this.reports = await response.data.data
                 }catch (err){
                     console.log(err)
                 }
+                this.isBusy = false
                 console.log(this.reports)
             },
             linkGen(pageNum) {

@@ -1,6 +1,7 @@
 import ReportList from './Reports/ReportList';
 import ReportAdd from './Reports/ReportAdd';
-import Example from './components/ExampleComponent'
+import Example from './components/ExampleComponent';
+import ReportPendingList from './ReportsPending/ReportPendingList';
 
 const routes = [
     {
@@ -17,6 +18,16 @@ const routes = [
         path: '/report',
         name: 'report add',
         component: ReportAdd
+    },
+    {
+        path: '/report/:id',
+        name: 'report Edit',
+        component: ReportAdd
+    },
+    {
+        path: '/report-pending',
+        name: 'report pending list',
+        component: ReportPendingList
     }
 ];
 

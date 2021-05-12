@@ -40,12 +40,11 @@ class ReportRepository extends BaseRepository implements ReportRepositoryInterfa
             
             foreach ($sites as $site)
             {
-                dd($site);
                 $this->report = $this->factory->getInstance(Report::class);
-                $this->report->tool_name = $site->tool_name;
-                $this->report->site = $site->site;
+                $this->report->tool_name = $site['tool_name'];
+                $this->report->site = $site['url'];
                 $this->report->file_format = 'json';
-                $this->report->file_fake_name = "$site.json";
+                $this->report->file_fake_name = "{$site['url']}.json";
                 $this->report->file_name = uniqid ();
                 $this->report->save();
 
@@ -63,6 +62,14 @@ class ReportRepository extends BaseRepository implements ReportRepositoryInterfa
         $reports = $this->report->all();
 
         return $reports->toArray();
+    }
+
+
+    public function getPendingReports()
+    {
+        $reportsPending = $this->reportPending->all();
+
+        return $reportsPending->toArray();
     }
 
 }
