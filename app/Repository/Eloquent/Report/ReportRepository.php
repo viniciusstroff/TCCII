@@ -72,4 +72,11 @@ class ReportRepository extends BaseRepository implements ReportRepositoryInterfa
         return $reportsPending->toArray();
     }
 
+    public function findPendingReport($id)
+    {   
+        $reportPending = $this->reportPending->find($id);
+
+        return $reportPending;
+    }
+
 }

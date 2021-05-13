@@ -10,4 +10,5 @@ interface ReportRepositoryInterface {
     public function save(Array $request);
     public function getPendingReports();    
     public function find($id);
+    public function findPendingReport($id);
 }

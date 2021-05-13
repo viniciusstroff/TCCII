@@ -11,17 +11,17 @@ const routes = [
     },
     {
         path: '/reports',
-        name: 'reports list',
+        name: 'reports-list',
         component: ReportList
     },
     {
         path: '/report',
-        name: 'report add',
+        name: 'report-add',
         component: ReportAdd
     },
     {
         path: '/report/:id',
-        name: 'report Edit',
+        name: 'report-edit',
         component: ReportAdd
     },
     {

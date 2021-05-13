@@ -56,13 +56,12 @@
                             </div>
                         </template>
                         <template #cell(options)="row">
-                             <router-link
-                                data-toggle="collapse"
-                                :to="{ path: `report/${row.item.id}` }">
-                                    <b-button variant="primary" size="sm">
-                                        Editar {{row.item.id}}
-                                    </b-button>
+                            <router-link data-toggle="collapse" :to="{ name: 'report-edit', params: { id: row.item.id } }">
+                                <b-button variant="primary" size="sm">Editar</b-button>
                             </router-link>
+
+                            <b-button variant="danger" @click="remove(row.item.id)" size="sm">Deletar</b-button>
+                            
                         </template>
                     </b-table>
 
@@ -92,10 +91,9 @@
                 isBusy: false,
                 filterOn: []
 
-
             }
         },
-        mounted() {
+        created() {
             this.getReports()
         },
         methods: {
@@ -111,8 +109,21 @@
                 this.isBusy = false
                 console.log(this.reports)
             },
+
             linkGen(pageNum) {
                 return pageNum === 1 ? '?' : `?page=${pageNum}`
+            },
+
+            async remove(id) {
+                this.isBusy = true;
+                try{
+                    const response = await axios.delete(`http://localhost:8000/api/reports/` + id).then(response => (this.info = response))
+                    this.reports = await response.data.data
+                }catch (err){
+                    console.log(err)
+                }
+                this.getReports()
+                this.isBusy = false
             }
         }
     }

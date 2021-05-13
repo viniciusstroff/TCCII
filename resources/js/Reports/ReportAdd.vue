@@ -1,17 +1,20 @@
 <template>
     <div>
-      <report-form @sites="getSites($event)"></report-form>
+      <report-form @sites="getSites($event)" @isEditing="isEditing($event)"></report-form>
+
+      <div v-if="!isEditing">
       <b-pagination v-model="table.currentPage" :per-page="table.perPage" :total-rows="sites.length"></b-pagination>
-      <b-table :items="sites" :per-page="table.perPage" 
-        :fields="table.fields"
-        striped
-        small
-        :current-page="table.currentPage">
-      </b-table>
+        <b-table :items="sites" :per-page="table.perPage"  
+          :fields="table.fields"
+          striped
+          small
+          :current-page="table.currentPage">
+        </b-table>
+      </div>
       
       <b-button type="button" variant="primary" @click="saveReports()">Salvar</b-button>
       <b-button type="reset" variant="danger">Limpar</b-button>
-      <router-link data-toggle="collapse" :to="{ path: 'reports' }">
+      <router-link data-toggle="collapse" :to="{ path: '/reports' }" back>
         <b-button variant="primary">
             Voltar
         </b-button>
@@ -34,7 +37,7 @@ import ReportForm from './ReportForm.vue'
             {key: 'tool_name',  label: 'Ferramenta', sortable: true }
           ]
         },
-        sites: []
+        sites: [],
       }
     },
     methods: {
@@ -49,7 +52,10 @@ import ReportForm from './ReportForm.vue'
          this.loading = false)
         //  this.$router.push({path: 'reports'})
       },
-      
+      isEditing(bool){
+        console.log(bool)
+        this.isEditing = bool
+      },
       getSites(sites)
       {
         this.sites = sites

@@ -46,6 +46,9 @@
                             <strong>Carregando os dados...</strong>
                             </div>
                         </template>
+                        <template #cell(options)="row">
+                            <b-button variant="primary" @click="audit(row.item.report_id)" size="sm">Auditar</b-button>
+                        </template>
                     </b-table>
 
                 </div>
@@ -93,6 +96,17 @@
             },
             linkGen(pageNum) {
                 return pageNum === 1 ? '?' : `?page=${pageNum}`
+            },
+
+            async audit(report_id){
+                this.isBusy = true;
+                try{
+                    const response = await axios.get('http://localhost:8000/api/lighthouse').then(response => (this.info = response))
+                    this.reportsPending = await response.data.data
+                }catch (err){
+                    console.log(err)
+                }
+                this.isBusy = false
             }
         }
     }

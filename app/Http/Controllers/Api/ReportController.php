@@ -61,7 +61,7 @@ class ReportController extends BaseApiController
         } catch (\Exception $e){
             return $this->sendResponse("Erro", "{$e->getMessage()}");
         }
-        return $this->sendResponse($report, "Relatório salvo com sucesso");
+        return $this->sendResponse($report, "Dados do relatório carregados com sucesso");
     }
 
 
@@ -78,5 +78,15 @@ class ReportController extends BaseApiController
 
     public function destroy($id)
     {
+        try
+        {
+            $report = $this->reportRepository->find($id);
+            $report->reportPending()->delete();
+            $report->delete();
+            
+        } catch (\Exception $e){
+            return $this->sendResponse("Erro", "{$e->getMessage()}");
+        }
+        return $this->sendResponse($report, "Relatório removido com sucesso");
     }
 }

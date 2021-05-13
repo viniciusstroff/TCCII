@@ -32,6 +32,13 @@ Route::middleware('api')->group(function () {
     Route::apiResource('audits', AuditController::class);
     Route::apiResource('reports-pending', ReportPendingController::class);
     Route::apiResource('reports', ReportController::class);
+
+
+    // Route::prefix('audits')->group(function () {
+    //     Route::get('reports', [ReportController::class, 'index']);
+    //     Route::get('report/{id}', [ReportController::class , 'show']); 
+    // });
+    
 });
 
 
