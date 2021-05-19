@@ -28,7 +28,7 @@
                         </b-col>
                         </b-row>
                     </b-form>
-
+                    {{this.finished}}
                     <b-table
                         id="table-transition-example"
                         :items="reportsPending"
@@ -48,6 +48,7 @@
                         </template>
                         <template #cell(options)="row">
                             <b-button variant="primary" @click="audit(row.item.report_id)" size="sm">Auditar</b-button>
+                            <b-button variant="primary" @click="isAuditFinished(row.item.report_id)" size="sm">Verificar se Finalizou</b-button>
                         </template>
                     </b-table>
 
@@ -72,9 +73,11 @@
                     {key: 'report_id', label: 'ID do Relatorio', sortable: true },
                     {key: 'is_finished',  label: 'Terminou?', sortable: true },
                     {key: 'created_at', label: 'Criado em', sortable: true },
-                    {key: 'updated_at', label: 'Atualizao em', sortable: true }
+                    {key: 'updated_at', label: 'Atualizao em', sortable: true },
+                    {key: 'options', label: 'Opcoes', sortable: false }
                 ],
                 isBusy: false,
+                finished: false,
                 filterOn: []
 
             }
@@ -94,6 +97,7 @@
                 }
                 this.isBusy = false
             },
+            
             linkGen(pageNum) {
                 return pageNum === 1 ? '?' : `?page=${pageNum}`
             },
@@ -101,13 +105,27 @@
             async audit(report_id){
                 this.isBusy = true;
                 try{
-                    const response = await axios.get('http://localhost:8000/api/lighthouse').then(response => (this.info = response))
+                    const response = await axios.post('http://localhost:8000/api/reports-pending/audit', {report_id: report_id}).then(response => (this.info = response))
                     this.reportsPending = await response.data.data
                 }catch (err){
                     console.log(err)
                 }
                 this.isBusy = false
+            },
+
+             async isAuditFinished(report_id){
+                this.isBusy = true;
+                try{
+                    const response = await axios.get(`http://localhost:8000/api/reports-pending/finished/${report_id}`).then(response => (this.info = response))
+                    this.finished = await reponse.data.data
+
+                    this.getPendingReports()
+                }catch (err){
+                    console.log(err)
+                }
+                this.isBusy = false
             }
+            
         }
     }
 </script>

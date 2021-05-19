@@ -5,7 +5,7 @@ import ReportPendingList from './ReportsPending/ReportPendingList';
 
 const routes = [
     {
-        path: '/',
+        path: '/audits',
         name: 'home',
         component: Example
     },

@@ -117,7 +117,7 @@
             async remove(id) {
                 this.isBusy = true;
                 try{
-                    const response = await axios.delete(`http://localhost:8000/api/reports/` + id).then(response => (this.info = response))
+                    const response = await axios.delete(`http://localhost:8000/api/reports/${id}/remove`).then(response => (this.info = response))
                     this.reports = await response.data.data
                 }catch (err){
                     console.log(err)

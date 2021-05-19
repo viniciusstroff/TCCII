@@ -105,10 +105,12 @@ export default {
       this.loading = true
       try{
 
-        const response = await axios.get('http://localhost:8000/api/reports/' + this.data.id).then(response => (this.info = response))
+        const response = await axios.get(`http://localhost:8000/api/reports/${this.data.id}`).then(response => (this.info = response))
         const data = await response.data.data
         this.form.site = data.site
         this.form.tool = data.tool_name 
+        
+        this.$emit('form', this.form)
         
       }catch( e){
         console.log(e)
@@ -148,7 +150,7 @@ export default {
       if(!this.validate()){
           return
       }
-        
+      
       const site = { url: this.form.site, tool_name: this.form.tool }
       this.data.sites.push(site)
       this.data.sites.reverse()

@@ -28,12 +28,25 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 Route::middleware('api')->group(function () {
-    Route::apiResource('lighthouse', LighthouseController::class);
     Route::apiResource('audits', AuditController::class);
     Route::apiResource('reports-pending', ReportPendingController::class);
-    Route::apiResource('reports', ReportController::class);
+    // Route::apiResource('reports', ReportController::class);
+
+    Route::get('/reports', 'App\Http\Controllers\Api\ReportController@index');
+    Route::get('/reports/{id}', 'App\Http\Controllers\Api\ReportController@show');
+    Route::post('/reports/save', 'App\Http\Controllers\Api\ReportController@store');
+    Route::put('/reports/{id}/update', 'App\Http\Controllers\Api\ReportController@update');
+    Route::delete('/reports/{id}/remove', 'App\Http\Controllers\Api\ReportController@destroy');
+
+    Route::get('/reports-pending', 'App\Http\Controllers\Api\ReportPendingController@index');
+    Route::post('/reports-pending/audit', 'App\Http\Controllers\Api\ReportPendingController@audit');
+    Route::get('/reports-pending/finished/{id}', 'App\Http\Controllers\Api\ReportPendingController@finishedReport');
 
 
+
+    // Route::apiResource('reports-pending', ReportPendingController::class);
+    
+    // Route::apiResource('lighthouse', LighthouseController::class);
     // Route::prefix('audits')->group(function () {
     //     Route::get('reports', [ReportController::class, 'index']);
     //     Route::get('report/{id}', [ReportController::class , 'show']); 

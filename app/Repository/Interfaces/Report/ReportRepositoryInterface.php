@@ -2,13 +2,16 @@
 
 namespace App\Repository\Interfaces\Report;
 
+use App\Models\Report;
 
 interface ReportRepositoryInterface {
 
 
     public function all();
-    public function save(Array $request);
+    public function saveReport(Array $request);
+    public function updateReport(Array $request, $id);
     public function getPendingReports();    
     public function find($id);
-    public function findPendingReport($id);
+    public function getReportNotFinished($id);
+    public function updateFlagReportPending(Report $report, $status = 1);
 }

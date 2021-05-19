@@ -16,9 +16,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+
+Route::get('{any}', function () {
+    return view('audits.index');
+})->where('any','.*');
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 Route::resource('contacts', ContactController::class);
 
 // Auth::routes();

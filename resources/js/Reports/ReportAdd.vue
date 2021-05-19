@@ -1,6 +1,6 @@
 <template>
     <div>
-      <report-form @sites="getSites($event)" @isEditing="isEditing($event)"></report-form>
+      <report-form @sites="getSites($event)" @form="getForm($event)"></report-form>
 
       <div v-if="!isEditing">
       <b-pagination v-model="table.currentPage" :per-page="table.perPage" :total-rows="sites.length"></b-pagination>
@@ -12,7 +12,7 @@
         </b-table>
       </div>
       
-      <b-button type="button" variant="primary" @click="saveReports()">Salvar</b-button>
+      <b-button type="button" variant="primary" @click="saveOrEditReport()">{{isEditing ? 'Atualizar' : 'Salvar'}}</b-button>
       <b-button type="reset" variant="danger">Limpar</b-button>
       <router-link data-toggle="collapse" :to="{ path: '/reports' }" back>
         <b-button variant="primary">
@@ -29,6 +29,8 @@ import ReportForm from './ReportForm.vue'
     data() {
       return {
         loading: false,
+        isEditing: false,
+        form: {},
         table: {
           perPage: 5,
           currentPage: 1,
@@ -40,25 +42,55 @@ import ReportForm from './ReportForm.vue'
         sites: [],
       }
     },
+    created: function(){
+      this.isEditing = this.$route.params.id ? true : false
+    },
     methods: {
-      saveReports()
+      async saveReports()
       {
-        axios.post('http://localhost:8000/api/reports/', { sites: this.sites })
-        .then(response => (
-            console.log(response.data)
-        ))
-        .catch(error => console.log(error))
-        .finally(() =>
-         this.loading = false)
-        //  this.$router.push({path: 'reports'})
+        try{
+         
+          const response = await axios.post('http://localhost:8000/api/reports/save', { sites: this.sites })
+          const data = await response.data.data
+
+        } catch (e)
+        {
+          console.log(e)
+        }
+         this.$router.push({path: 'reports'})
       },
-      isEditing(bool){
-        console.log(bool)
-        this.isEditing = bool
+
+      async saveOrEditReport() {
+  
+         if(this.isEditing) {
+           console.log('atuaizando')
+            this.updateReport()
+            return
+          }
+
+
+           console.log('salvando')
+          this.saveReports()
+      },
+
+      async updateReport()
+      {
+        try{
+          const reportId = this.$route.params.id
+          const response = await axios.put(`http://localhost:8000/api/reports/${reportId}/update`, { tool_name: this.form.tool, site: this.form.site })
+          const data = await response.data.data
+        } catch (e) {
+          console.log(e)
+        }
+
+        this.$router.go(-1)
       },
       getSites(sites)
       {
         this.sites = sites
+      },
+      getForm(form){
+        this.form = form
       }
     }
   }

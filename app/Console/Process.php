@@ -136,8 +136,10 @@ class Process
             // dd($this->command);
             $pool->add(function(){
                 $this->isRunning = true;
+                error_reporting(E_ALL);
                 if (substr(php_uname(), 0, 7) == "Windows"){
-                    pclose(popen("start /B ". $this->command , "r")); 
+                    $process = popen("start /B ". $this->command ."  0>&1>&2 > teste123213.log", "r");
+                    pclose($process); 
                 }
                 else {
                     exec($this->command . " > /dev/null &", $output, $this->exitCode);  
@@ -183,7 +185,6 @@ class Process
                 $result = $this->execute($this->command);
                 return $result;
             });
-            
             $results = await($pool);
 
             return $results;

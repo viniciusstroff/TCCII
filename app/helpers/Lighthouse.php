@@ -44,7 +44,8 @@ class Lighthouse {
         $this->setOutputFile();
         $this->setOutput();
         $this->setLogging();
-        $this->setChromeFlags(['--headless', '--disable-gpu', '--no-sandbox']);
+        $this->setChromeFlags(['--disable-gpu', '--no-sandbox']);
+        $this->setOption("--verbose", true);
         
     }
 
@@ -70,8 +71,9 @@ class Lighthouse {
 
     public function setOutputFile(?String $filename = null)
     {
-        $filename = (preg_replace('#^www\.(.+\.)#i', '$1', parse_url($this->site, PHP_URL_HOST)));
-        $filename = str_replace(['.com', '.br'], '', $filename);
+        $filename = UrlHelper::getOnlySiteName($this->site);
+        // $filename = (preg_replace('#^www\.(.+\.)#i', '$1', parse_url($this->site, PHP_URL_HOST)));
+        // $filename = str_replace(['.com', '.br'], '', $filename);
         $file =  base_path($this->outputPath . $filename ) . ".json";
         $file = str_replace(["\\", "//"], "/", $file);
         $this->outputFile = $file;
@@ -195,7 +197,7 @@ class Lighthouse {
         return $processOptions;
     }
 
-    public function setOption(String $option, ?String $value)
+    public function setOption(String $option, ?String $value = null)
     {
        
         if (($foundIndex = array_search($option, $this->options)) !== false) {
@@ -293,8 +295,8 @@ class Lighthouse {
                 
                 $results = $process->run();
                 return $results;
-            })->then(function(){
-                
+            })->then(function ($results)  {
+                // dd($results);
             });
             
         

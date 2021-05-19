@@ -44,7 +44,7 @@ class ReportController extends BaseApiController
         {
             
             $request = $request->only(['sites']);
-            $reportPending = $this->reportRepository->save($request);
+            $reportPending = $this->reportRepository->saveReport($request);
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage());
         }
@@ -73,7 +73,9 @@ class ReportController extends BaseApiController
 
     public function update(ReportPendingRequest $request, $id)
     {
-
+        $request = $request->only(['site', 'tool_name']);
+        $reportPending = $this->reportRepository->updateReport($request, $id);
+        dd($request, $id);
     }
 
     public function destroy($id)
