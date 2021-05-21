@@ -14,4 +14,5 @@ interface ReportRepositoryInterface {
     public function find($id);
     public function getReportNotFinished($id);
     public function updateFlagReportPending(Report $report, $status = 1);
+    public function searchPendingReportByFilters(Array $filters, $paginate = false, $perPage = 15);
 }

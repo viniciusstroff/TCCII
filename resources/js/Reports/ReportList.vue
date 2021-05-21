@@ -89,6 +89,7 @@
                     {key: 'options', label: 'Opções'}
                 ],
                 isBusy: false,
+                info: null,
                 filterOn: []
 
             }
@@ -118,11 +119,14 @@
                 this.isBusy = true;
                 try{
                     const response = await axios.delete(`http://localhost:8000/api/reports/${id}/remove`).then(response => (this.info = response))
-                    this.reports = await response.data.data
+                    
+                    if(response.data.success === true){
+                        this.reports = this.reports.filter(report => report.id !== id)
+                    }
+
                 }catch (err){
                     console.log(err)
                 }
-                this.getReports()
                 this.isBusy = false
             }
         }

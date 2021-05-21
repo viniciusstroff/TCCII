@@ -73,7 +73,7 @@ class ReportRepository extends BaseRepository implements ReportRepositoryInterfa
 
     public function getPendingReports()
     {
-        $reportsPending = $this->reportPending->where('is_finished', 0)->get();
+        $reportsPending = ReportPending::select('*')->orderBy("is_finished", "asc")->get();
         return $reportsPending->toArray();
     }
 
@@ -95,10 +95,17 @@ class ReportRepository extends BaseRepository implements ReportRepositoryInterfa
         $reportPending->is_finished = $status;
         $reportPending->save();
     }
+    
+    public function searchPendingReportByFilters(Array $filters, $paginate = false, $perPage = 15)
+    {
+        $is_finished = $filters['is_finished'];
+        $search = $this->reportPending->newQuery();
 
-    // public function changeReportFlagFinished($id, $flag = 0)
-    // {
-    //     $report = Report::find($id);
+        if($filters['is_finished'] === 0 || $filters['is_finished'] === 1) {
+            $search->where('is_finished', $filters['is_finished']);
+        }
 
-    // }
+        $search = $search->get();
+        return $search->toArray();
+    }
 }

@@ -41,6 +41,7 @@ Route::middleware('api')->group(function () {
     Route::get('/reports-pending', 'App\Http\Controllers\Api\ReportPendingController@index');
     Route::post('/reports-pending/audit', 'App\Http\Controllers\Api\ReportPendingController@audit');
     Route::get('/reports-pending/finished/{id}', 'App\Http\Controllers\Api\ReportPendingController@finishedReport');
+    Route::post('/reports-pending/search', 'App\Http\Controllers\Api\ReportPendingController@search');
 
 
 

@@ -46,6 +46,15 @@ class ReportPendingController extends BaseApiController
     }
 
 
+    public function search(Request $request)
+    {
+        $filters = $request->only('is_finished');
+        $reportPending = $this->reportRepository->searchPendingReportByFilters($filters);
+
+        return $reportPending;
+    }
+
+
     public function edit($id)
     {
 

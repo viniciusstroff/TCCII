@@ -89,6 +89,6 @@ class ReportController extends BaseApiController
         } catch (\Exception $e){
             return $this->sendResponse("Erro", "{$e->getMessage()}");
         }
-        return $this->sendResponse($report, "Relatório removido com sucesso");
+        return $this->sendResponse("Sucesso", "Relatório removido com sucesso");
     }
 }

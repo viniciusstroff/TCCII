@@ -23,16 +23,6 @@
                 </router-link>
             </li>
 
-            <li class="nav-item">
-                <router-link
-                class="nav-link"
-                data-toggle="collapse"
-                :to="{ path: 'report' }"
-                >
-                About
-                </router-link>
-            </li>
-
              <li class="nav-item">
                 <router-link
                 class="nav-link"
