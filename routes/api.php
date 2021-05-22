@@ -37,6 +37,7 @@ Route::middleware('api')->group(function () {
     Route::post('/reports/save', 'App\Http\Controllers\Api\ReportController@store');
     Route::put('/reports/{id}/update', 'App\Http\Controllers\Api\ReportController@update');
     Route::delete('/reports/{id}/remove', 'App\Http\Controllers\Api\ReportController@destroy');
+    Route::post('/reports/search', 'App\Http\Controllers\Api\ReportController@search');
 
     Route::get('/reports-pending', 'App\Http\Controllers\Api\ReportPendingController@index');
     Route::post('/reports-pending/audit', 'App\Http\Controllers\Api\ReportPendingController@audit');

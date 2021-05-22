@@ -8,7 +8,9 @@ use App\Models\Report;
 use App\Models\ReportPending;
 use App\Repository\Eloquent\BaseRepository;
 use App\Repository\Interfaces\Report\ReportRepositoryInterface;
+use App\VOs\Filters;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 
 class ReportRepository extends BaseRepository implements ReportRepositoryInterface {
 
@@ -63,9 +65,32 @@ class ReportRepository extends BaseRepository implements ReportRepositoryInterfa
         }
     }
 
+    public function searchByFilters(Filters $filters, $paginate = false, $perPage = 15)
+    {
+        $reportTable = Report::TABLE_NAME;
+        $reportPendingTable = ReportPending::TABLE_NAME;
+        $search = Report::query()
+                        ->join($reportPendingTable, "{$reportPendingTable}.report_id", "=", "{$reportTable}.id")
+                        ->orderBy("{$reportTable}.id", 'ASC'); 
+
+        if($filters->has('site'))
+            $search->where("{$reportTable}.site", 'like', '%'.$filters->getFilter('site').'%');
+
+        if($filters->has('is_finished'))
+            $search->where("{$reportPendingTable}.is_finished", "=", $filters->getFilter('is_finished'));
+    
+        if($filters->has('tool_name'))
+            $search->where('tool_name', $filters->getFilter('tool_name'));
+
+        if($filters->has('tool_name'))
+            $search->where('tool_name', $filters->getFilter('tool_name'));
+
+        return ($paginate) ? $search->paginate($perPage)->toArray() : $search->get()->toArray();
+    }
+
     public function all()
     {
-        $reports = $this->report->all();
+        $reports = Report::all();
 
         return $reports->toArray();
     }

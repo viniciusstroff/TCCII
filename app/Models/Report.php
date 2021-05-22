@@ -9,8 +9,15 @@ class Report extends Model
 {
     use HasFactory;
 
-    protected $table = 'reports';
+    const TABLE_NAME = "reports";
+
+    protected $table = self::TABLE_NAME;
     protected $id = 'id';
+
+    protected $dates = [
+        'created_at',
+        'updated_at',
+    ];
 
     protected $fillable = [
         'id',
@@ -21,6 +28,11 @@ class Report extends Model
         'file_fake_name',
         'created_at',
         'updated_at'
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime:d/m/Y H:i:s',
+        'updated_at' => 'datetime:d/m/Y H:i:s'
     ];
 
 

@@ -2,7 +2,7 @@
     <div >
         <div class="row">
             <div class="col-md-12">
-                <report-search @dataSearched="getDataSearched($event)"></report-search>
+                <report-pending-search @dataSearched="getDataSearched($event)"/>
                 <div class="overflow-auto">
                     <b-table
                             id="table-transition-example"

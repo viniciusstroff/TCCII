@@ -27,7 +27,10 @@ Vue.use(VueRouter)
 // Vue.component('report-dd', require('./Reports/ReportAdd.vue').default);
 // Vue.component('app-component', require('./components/App.vue').default);
 
-Vue.component('report-search', require('./ReportsPending/ReportPendingSearch.vue').default);
+Vue.component('report-pending-search', require('./ReportsPending/ReportPendingSearch.vue').default);
+Vue.component('report-search', require('./Reports/ReportSearch.vue').default);
+Vue.component('button-redirect', require('./components/geral/Buttons/Redirect/ButtonRedirect.vue').default);
+
 
 const router = new VueRouter({
     mode: 'history',

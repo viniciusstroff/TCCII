@@ -13,6 +13,6 @@ class GenericFactory {
 
     public function getInstance($class,  $data = [])
     {
-        return new $class;
+        return new $class($data);
     }
 }

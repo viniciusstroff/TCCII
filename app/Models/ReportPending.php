@@ -9,7 +9,9 @@ class ReportPending extends Model
 {
     use HasFactory;
 
-    protected $table = 'reports_pending';
+    const TABLE_NAME = "reports_pending";
+
+    protected $table = self::TABLE_NAME;
     protected $id = 'id';
     protected $foreinKey = 'report_id';
 

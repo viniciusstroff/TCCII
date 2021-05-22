@@ -3,6 +3,8 @@
 namespace App\Repository\Interfaces\Report;
 
 use App\Models\Report;
+use App\VOs\Filters;
+use Illuminate\Http\Request;
 
 interface ReportRepositoryInterface {
 
@@ -15,4 +17,5 @@ interface ReportRepositoryInterface {
     public function getReportNotFinished($id);
     public function updateFlagReportPending(Report $report, $status = 1);
     public function searchPendingReportByFilters(Array $filters, $paginate = false, $perPage = 15);
+    public function searchByFilters(Filters $filters, $paginate = false, $perPage = 15);
 }

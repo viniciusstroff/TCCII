@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers\Api;
 
-
+use App\Factories\GenericFactory;
 use App\Http\Requests\ReportPendingRequest;
 use App\Http\Requests\ReportRequest;
+use App\Models\Report;
 use App\Repository\Interfaces\Report\ReportRepositoryInterface;
-use App\Repository\Interfaces\ReportPending\ReportPendingRepositoryInterface;
+use App\VOs\Filters;
 use Illuminate\Http\Request;
 
 class ReportController extends BaseApiController
 {
     private $reportRepository;
-    private $reportPendingRepository;
+    private $genericFactory;
 
-    public function  __construct(ReportRepositoryInterface $reportRepository, ReportPendingRepositoryInterface $reportPendingRepository)
+    public function  __construct(ReportRepositoryInterface $reportRepository, GenericFactory $genericFactory)
     {
         $this->reportRepository = $reportRepository;
-        $this->reportPendingRepository = $reportPendingRepository;
+        $this->genericFactory = $genericFactory;
     }
 
     public function index()
@@ -90,5 +91,17 @@ class ReportController extends BaseApiController
             return $this->sendResponse("Erro", "{$e->getMessage()}");
         }
         return $this->sendResponse("Sucesso", "Relatório removido com sucesso");
+    }
+
+    public function search(Request $request)
+    {
+        $filters = ($request->has('filters')) ? $request->input('filters') : [];
+        try {
+            $filters = $this->genericFactory->getInstance(Filters::class, $filters);
+            $reports = $this->reportRepository->searchByFilters($filters, $paginate = true);
+        } catch (\Exception $e) {
+            return $this->sendResponse("Erro", "{$e->getMessage()}");
+        }
+        return $this->sendResponse($reports, "Filtro realizado com sucesso" );
     }
 }
