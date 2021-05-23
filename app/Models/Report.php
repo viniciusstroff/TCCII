@@ -40,4 +40,22 @@ class Report extends Model
     {
         return $this->hasOne(ReportPending::class);
     }
+
+    public function getFileFakeNameAttriute()
+    {
+        return $this->getFileFakeName();
+    }
+
+    public function setFileFakeNameAttribute($value) 
+    {
+        $fileFakeName = $this->getFileFakeName($value);
+        $this->attributes['file_fake_name'] = $fileFakeName;
+    }
+
+    public function getFileFakeName($value = null)
+    {   
+        $fileFakeName = $value ? $value : $this->file_fake_name;
+            
+        return "{$fileFakeName}.{$this->file_format}";
+    }
 }

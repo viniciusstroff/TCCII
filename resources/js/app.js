@@ -30,6 +30,7 @@ Vue.use(VueRouter)
 Vue.component('report-pending-search', require('./ReportsPending/ReportPendingSearch.vue').default);
 Vue.component('report-search', require('./Reports/ReportSearch.vue').default);
 Vue.component('button-redirect', require('./components/geral/Buttons/Redirect/ButtonRedirect.vue').default);
+// Vue.component('per-page', require('./components/geral/Table/PerPage.vue').default);
 
 
 const router = new VueRouter({

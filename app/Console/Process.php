@@ -138,7 +138,7 @@ class Process
                 $this->isRunning = true;
                 error_reporting(E_ALL);
                 if (substr(php_uname(), 0, 7) == "Windows"){
-                    $process = popen("start /B ". $this->command ."  0>&1>&2 > teste123213.log", "r");
+                    $process = popen("start /B ". $this->command , "r");
                     pclose($process); 
                 }
                 else {

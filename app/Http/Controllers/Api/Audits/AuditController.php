@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\Audits;
 use App\Http\Controllers\Api\BaseApiController;
 use App\Http\Requests\TesteRequest;
 use App\Models\Contact;
-use App\Repository\ReportRepositoryInterface;
+use App\Repository\Interfaces\Report\ReportRepositoryInterface;
 use Illuminate\Http\Request;
 
 class AuditController extends BaseApiController

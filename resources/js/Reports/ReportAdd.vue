@@ -83,7 +83,7 @@ import ReportForm from './ReportForm.vue'
           console.log(e)
         }
 
-        this.$router.go(-1)
+        this.$router.back()
       },
       getSites(sites)
       {

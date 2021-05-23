@@ -4,6 +4,7 @@ namespace App\Helpers;
 use App\Console\Process;
 use App\Exceptions\AuditFailedException;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use phpDocumentor\Reflection\Types\Boolean;
 use Spatie\Async\Pool;
 use Symfony\Component\Process\Process as ProcessProcess;
@@ -22,8 +23,9 @@ class Lighthouse {
     protected $config = null;
     protected Array $categories = [];
     protected $environmentVariables = [];
-    protected $timeout = 60;
+    protected $timeout = 40;
     protected String $defaultFormat = 'json';
+    protected String $format = "";
 
   
 
@@ -72,9 +74,7 @@ class Lighthouse {
     public function setOutputFile(?String $filename = null)
     {
         $filename = UrlHelper::getOnlySiteName($this->site);
-        // $filename = (preg_replace('#^www\.(.+\.)#i', '$1', parse_url($this->site, PHP_URL_HOST)));
-        // $filename = str_replace(['.com', '.br'], '', $filename);
-        $file =  base_path($this->outputPath . $filename ) . ".json";
+        $file =  base_path($this->outputPath . $filename ) . ".{$this->format}";
         $file = str_replace(["\\", "//"], "/", $file);
         $this->outputFile = $file;
     }
@@ -107,7 +107,8 @@ class Lighthouse {
     }
 
     public function setOutputFormat(String $format)
-    {
+    {   
+        $this->format = $format;
         if(in_array($format, $this->availableFormats))
             $this->setOption('--output', $format);
      
@@ -252,7 +253,7 @@ class Lighthouse {
             if(!file_exists($this->outputFile))
                 dd("arquivo {$this->outputFile} nao econtrado");
 
-            $content = File::get($this->outputFile);
+            $content = Storage::disk('local')->get($this->outputFile);
             $object = json_decode($content);
             $json = $this->mapOnlyNecessaryToJson($object);
         
@@ -260,13 +261,19 @@ class Lighthouse {
         // }
         
     }
-
     public function isRunning()
     {
-        // while($this->hasFinished === false){
-        //     $this->isRunning();
-        // }
-        // return false;
+        $start = microtime(true);
+        do {
+            if (file_exists($this->outputFile)) {
+                $this->hasFinished = true;
+                break;
+            }
+
+            if(microtime(true) - $start >= $this->timeout) {
+                break;
+            }
+        } while(!file_exists($this->outputFile));
     }
 
     private function mapOnlyNecessaryToJson(Object $object)
@@ -287,22 +294,27 @@ class Lighthouse {
             $this->setCommand($this->site);
             $command = $this->getCommand($this->site);
             // . " > /dev/null &" //executar em segundo plano
-            $pool = Pool::create();
 
-            $pool->add(function() use($command){
-                $process = new Process($command);
-                $process->setTimeout(300);
+     
+                $pool = Pool::create();
+
+                $pool->add(function() use($command){
+                  
+                        $process = new Process($command);
+                        $process->setTimeout($this->timeout);
+                        
+                        $results = $process->run();
+                    return $results;
+                })->then(function ($results)  {
+                    // dd($results);
+
+                });
                 
-                $results = $process->run();
-                return $results;
-            })->then(function ($results)  {
-                // dd($results);
-            });
-            
-        
-            $results = await($pool);
+                $results = await($pool);
+               
 
-            $this->hasFinished = true;
+                $this->hasFinished = true;
+            
             return $results;
         }catch(\Exception $e){
             dd($e->getMessage());

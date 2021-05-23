@@ -40,7 +40,7 @@ class ReportRepository extends BaseRepository implements ReportRepositoryInterfa
                 $this->report->tool_name = $site['tool_name'];
                 $this->report->site = $site['url'];
                 $this->report->file_format = 'json';
-                $this->report->file_fake_name = "{$siteName}.{$this->report->file_format}";
+                $this->report->file_fake_name = $siteName;
                 $this->report->file_name = uniqid ();
                 $this->report->save();
 
@@ -58,6 +58,7 @@ class ReportRepository extends BaseRepository implements ReportRepositoryInterfa
         
         try{
             $siteName = UrlHelper::getOnlySiteName($request['site']);
+            $request['file_fake_name'] = $siteName;
             $this->report = $this->find($id);
             $this->report->update($request);
         } catch (\Exception $e) {
@@ -71,6 +72,8 @@ class ReportRepository extends BaseRepository implements ReportRepositoryInterfa
         $reportPendingTable = ReportPending::TABLE_NAME;
         $search = Report::query()
                         ->join($reportPendingTable, "{$reportPendingTable}.report_id", "=", "{$reportTable}.id")
+                        ->addSelect("{$reportTable}.*")
+                        ->addSelect("{$reportPendingTable}.is_finished")
                         ->orderBy("{$reportTable}.id", 'ASC'); 
 
         if($filters->has('site'))

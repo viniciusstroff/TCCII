@@ -24,7 +24,7 @@
                             label-for="input-1"
                         >
                             <b-form-input
-                            v-model="filters.site"
+                            v-model="filters.tool_name"
                             type="search"
                             class="mb-1 mr-sm-1 mb-sm-0"
                             placeholder="Digite..."
@@ -32,7 +32,7 @@
                             
                         </b-form-group>
                     </b-col>
-                    <b-col sm="4" md="2">
+                    <b-col sm="4" md="4">
                         <b-form-group id="input-group-1" label="Status" label-for="input-3">
                             <b-form-select v-model="filters.is_finished" :options="options.finished"></b-form-select>
                         </b-form-group>

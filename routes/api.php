@@ -38,6 +38,8 @@ Route::middleware('api')->group(function () {
     Route::put('/reports/{id}/update', 'App\Http\Controllers\Api\ReportController@update');
     Route::delete('/reports/{id}/remove', 'App\Http\Controllers\Api\ReportController@destroy');
     Route::post('/reports/search', 'App\Http\Controllers\Api\ReportController@search');
+    Route::post('/reports/audit', 'App\Http\Controllers\Api\ReportController@audit');
+    Route::post('/reports/teste', 'App\Http\Controllers\Api\ReportController@teste');
 
     Route::get('/reports-pending', 'App\Http\Controllers\Api\ReportPendingController@index');
     Route::post('/reports-pending/audit', 'App\Http\Controllers\Api\ReportPendingController@audit');
