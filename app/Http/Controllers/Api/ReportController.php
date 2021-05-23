@@ -7,6 +7,7 @@ use App\Helpers\Lighthouse;
 use App\Http\Requests\ReportPendingRequest;
 use App\Http\Requests\ReportRequest;
 use App\Http\Requests\TesteRequest;
+use App\Jobs\ProcessAuditReports;
 use App\Models\Report;
 use App\Repository\Interfaces\Report\ReportRepositoryInterface;
 use App\VOs\Filters;
@@ -18,11 +19,13 @@ class ReportController extends BaseApiController
 {
     private $reportRepository;
     private $genericFactory;
+    // private $processReports;
 
-    public function  __construct(ReportRepositoryInterface $reportRepository, GenericFactory $genericFactory)
+    public function  __construct(ReportRepositoryInterface $reportRepository, GenericFactory $genericFactory)//ProcessReportsPending $processReports
     {
         $this->reportRepository = $reportRepository;
         $this->genericFactory = $genericFactory;
+        // $this->processReports = $processReports;
     }
 
     public function index()
@@ -104,84 +107,25 @@ class ReportController extends BaseApiController
             $filters = $this->genericFactory->getInstance(Filters::class, $filters);
             $reports = $this->reportRepository->searchByFilters($filters, $paginate = true);
         } catch (\Exception $e) {
-            return $this->sendResponse("Erro", "{$e->getMessage()}");
+            return $this->sendError("Erro", "{$e->getMessage()}");
         }
         return $this->sendResponse($reports, "Filtro realizado com sucesso" );
     }
 
     public function audit(Request $request) {
         $data = $request->only('reports');
-        // $reports = $data['reports'];
+        $reports = $data['reports'];
 
-        $reports[]['site'] = 'https://www.google.com';
-        $reports[]['site'] = 'https://www.youtube.com';
-        $pool = Pool::create();
-
-        foreach ($reports as $report) {
-            
-
-            $pool->add(function () use($report) {
-                $lighthouse = new Lighthouse($report['site']);
-                $lighthouse->setCategories(['accessibility', 'performance']);
-                $lighthouse->audit();
-                // return $lighthouse->isRunning();
-            })->then(function () use($pool){
-                // $outputFile = $this->lighthouse->getOutputFile();
-                // $open = fopen(base_path('app/console/outputs/') .'teste.log', 'a');
-                // fwrite($open,$lighthouse->getOutput());
-            //     // fclose($open);
-            })->catch(function( Throwable $exception){
-                return $this->sendError("ERRO", $exception->getMessage());
-            });
+        try {
+            $job = (new ProcessAuditReports($this->reportRepository, $reports))->delay(5);
+            $this->dispatch($job);
+        
+        } catch (\Exception $e) {
+            return $this->sendError($e->getMessage(), "Ocorreu algum erro ao utilizar a fila");
         }
         
-        $results = await($pool);
 
-        return $this->sendResponse($results, "Executando em segundo plano");
-
-    }
-
-
-    public function teste(Request $request)
-    {
-        $data = $request->all();
-
-        $pool = Pool::create();
-        $sites[] = 'https://www.google.com';
-        $sites[] = 'https://www.sinonimos.com.br';
-
-
-
-        foreach ($sites as $site) {
-            $lighthouse = new Lighthouse($site);
-            $pool->add(function () use($lighthouse) {
-                // while(!$lighthouse->hasFinished()){
-                    $lighthouse->setCategories(['accessibility', 'performance']);
-                    // $lighthouse->audit();
-                    $lighthouse->isRunning();
-                // }
-                return "true";
-            })->then(function () use($lighthouse, $pool){
-                // $outputFile = $this->lighthouse->getOutputFile();
-                // $open = fopen(base_path('app/console/outputs/') .'teste.log', 'a');
-                // fwrite($open,$lighthouse->getOutput());
-                // fclose($open);
-            })->catch(function( Throwable $exception){
-                return $this->sendError("ERRO", $exception->getMessage());
-            });
-        }
-
-        $results = await($pool);
-        // dd($results);
-        // if(!$this->lighthouse->isRunning()){
-
-        return $this->sendResponse($results, "A audição está sendo executada...");
-        // }
-
-
-
-
-        // dd($this->lighthouse->getOutput());
+        return $this->sendResponse([], "Audição sendo executada em segundo plano");
 
     }
 }
