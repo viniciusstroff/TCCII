@@ -9,6 +9,7 @@ use App\Http\Requests\ReportRequest;
 use App\Http\Requests\TesteRequest;
 use App\Jobs\ProcessAuditReports;
 use App\Models\Report;
+use App\Repository\Interfaces\Jobs\JobRepositoryInterface;
 use App\Repository\Interfaces\Report\ReportRepositoryInterface;
 use App\VOs\Filters;
 use Illuminate\Http\Request;
@@ -21,10 +22,16 @@ class ReportController extends BaseApiController
     private $genericFactory;
     // private $processReports;
 
-    public function  __construct(ReportRepositoryInterface $reportRepository, GenericFactory $genericFactory)//ProcessReportsPending $processReports
+    private $jobRepository;
+
+    public function  __construct(
+        ReportRepositoryInterface $reportRepository, 
+        GenericFactory $genericFactory,
+        JobRepositoryInterface $jobRepository)//ProcessReportsPending $processReports
     {
         $this->reportRepository = $reportRepository;
         $this->genericFactory = $genericFactory;
+        $this->jobRepository = $jobRepository;
         // $this->processReports = $processReports;
     }
 
@@ -50,9 +57,15 @@ class ReportController extends BaseApiController
     {
         try
         {
+            $request = $request->only(['reports']);
+            $reports = $request['reports'];
             
-            $request = $request->only(['sites']);
-            $reportPending = $this->reportRepository->saveReport($request);
+            foreach($reports as $report){
+                $report = $this->reportRepository->saveReport($report);
+                $job = (new ProcessAuditReports($this->reportRepository, $report))->onQueue('audits');
+                $this->dispatch($job);
+            }
+
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage());
         }
@@ -79,11 +92,16 @@ class ReportController extends BaseApiController
     }
 
 
-    public function update(ReportPendingRequest $request, $id)
+    public function update(ReportRequest $request, $id)
     {
         $request = $request->only(['site', 'tool_name']);
-        $reportPending = $this->reportRepository->updateReport($request, $id);
-        dd($request, $id);
+
+        try{
+            $report = $this->reportRepository->updateReport($request, $id);
+        } catch ( \Exception $e) {
+            $this->sendError("ERRO", "Erro ao tentar atualizar o relatorio de id {$id}, {$e->getMessage()}");
+        }
+        $this->sendResponse($report, "Relatório alterado com sucesso");
     }
 
     public function destroy($id)
@@ -115,10 +133,12 @@ class ReportController extends BaseApiController
     public function audit(Request $request) {
         $data = $request->only('reports');
         $reports = $data['reports'];
-
+    
         try {
-            $job = (new ProcessAuditReports($this->reportRepository, $reports))->delay(5);
-            $this->dispatch($job);
+            foreach($reports as $report){
+                $job = (new ProcessAuditReports($this->reportRepository, $report))->onQueue('audits');
+                $this->dispatch($job);
+            }
         
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage(), "Ocorreu algum erro ao utilizar a fila");

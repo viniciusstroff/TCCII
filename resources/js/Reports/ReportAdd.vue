@@ -1,18 +1,21 @@
 <template>
     <div>
-      <report-form @sites="getSites($event)" @form="getForm($event)"></report-form>
-
+      <report-form @reports="getReports($event)" @form="getForm($event)"></report-form>
       <div v-if="!isEditing">
-      <b-pagination v-model="table.currentPage" :per-page="table.perPage" :total-rows="sites.length"></b-pagination>
-        <b-table :items="sites" :per-page="table.perPage"  
+      <b-pagination v-model="table.currentPage" :per-page="table.perPage" :total-rows="reports.length"></b-pagination>
+        <b-table :items="reports" :per-page="table.perPage"  
           :fields="table.fields"
           striped
           small
           :current-page="table.currentPage">
+          <template #cell(options)="row">
+          <b-button variant="danger" @click="remove(row.index)" size="sm"
+            >Remover</b-button
+          >
+        </template>
         </b-table>
       </div>
-      
-      <b-button type="button" variant="primary" @click="saveOrEditReport()">{{isEditing ? 'Atualizar' : 'Salvar'}}</b-button>
+      <b-button :disabled="!hasReports && !isEditing" type="button" variant="primary" @click="saveOrEditReport()">{{isEditing ? 'Atualizar' : 'Salvar'}}</b-button>
       <b-button type="reset" variant="danger">Limpar</b-button>
       <router-link data-toggle="collapse" :to="{ path: '/reports' }" back>
         <b-button variant="primary">
@@ -36,28 +39,53 @@ import ReportForm from './ReportForm.vue'
           currentPage: 1,
           fields: [
             {key: 'url',  label: 'Site', sortable: true },
-            {key: 'tool_name',  label: 'Ferramenta', sortable: true }
+            {key: 'tool_name',  label: 'Ferramenta', sortable: true },
+            {key: 'options', label: 'Opções'}
           ]
         },
-        sites: [],
+        reports: [],
+        hasReports: false
+      }
+    },
+    watch: {
+      reports:  function () {
+        this.hasReports = this.reports.length > 0
       }
     },
     created: function(){
       this.isEditing = this.$route.params.id ? true : false
     },
     methods: {
+      remove(index) {
+        this.reports.splice(index, 1);
+      },
+
+      makeToast(title, message, status) {
+       this.$bvToast.toast(message, {
+          title: `${title}`,
+          variant: status === false ? 'danger' : 'success',
+          solid: true,
+          append: false
+        })
+      },
+
       async saveReports()
       {
         try{
          
-          const response = await axios.post('http://localhost:8000/api/reports/save', { sites: this.sites })
-          const data = await response.data.data
-
+          const response = await axios.post('http://localhost:8000/api/reports/save', { reports: this.reports })
+          const data = response.data.data
+          const message = response.data.message
+          this.makeToast("Salvo com sucesso", message, response.data.status)
+          
         } catch (e)
         {
           console.log(e)
         }
-         this.$router.push({path: 'reports'})
+
+          // this.$router.push('/reports', ()=>{
+          //   this.makeToast("Salvo com sucesso", 'a', false)
+          // })
       },
 
       async saveOrEditReport() {
@@ -78,16 +106,17 @@ import ReportForm from './ReportForm.vue'
         try{
           const reportId = this.$route.params.id
           const response = await axios.put(`http://localhost:8000/api/reports/${reportId}/update`, { tool_name: this.form.tool, site: this.form.site })
-          const data = await response.data.data
+          const data = response.data.data
+          const message = response.data.message
         } catch (e) {
           console.log(e)
         }
 
-        this.$router.back()
+        this.$router.push({name: 'reports-list',  params: {message: message} })
       },
-      getSites(sites)
+      getReports(reports)
       {
-        this.sites = sites
+        this.reports = reports
       },
       getForm(form){
         this.form = form

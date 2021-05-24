@@ -27,30 +27,28 @@ class ReportRepository extends BaseRepository implements ReportRepositoryInterfa
     }
 
 
-    public function saveReport(Array $request)
+    public function saveReport(Array $report)
     {
         try{
-            $sites = $request['sites'];
             
-            foreach ($sites as $site)
-            {
-                $siteName = UrlHelper::getOnlySiteName($site['url']);
-                $this->report = $this->factory->getInstance(Report::class);
-                //$this->report->create($request->all());
-                $this->report->tool_name = $site['tool_name'];
-                $this->report->site = $site['url'];
-                $this->report->file_format = 'json';
-                $this->report->file_fake_name = $siteName;
-                $this->report->file_name = uniqid ();
-                $this->report->save();
+            $siteName = UrlHelper::getOnlySiteName($report['url']);
+            $this->report = $this->factory->getInstance(Report::class);
+            //$this->report->create($request->all());
+            $this->report->tool_name = $report['tool_name'];
+            $this->report->site = $report['url'];
+            $this->report->file_format = 'json';
+            $this->report->file_fake_name = $siteName;
+            $this->report->file_name = uniqid ();
+            $this->report->save();
 
-                $this->reportPending = $this->factory->getInstance(ReportPending::class);
-                $this->reportPending->report()->associate($this->report);
-                $this->reportPending->save();
-            }
+            $this->reportPending = $this->factory->getInstance(ReportPending::class);
+            $this->reportPending->report()->associate($this->report);
+            $this->reportPending->save();
+            
         } catch (\Exception $e) {
-            dd($e->getMessage(), $e);
+            throw new \Exception("Problemas ao salvar um relatorio, {$e->getMessage()}");
         }
+        return $this->report;
     }
 
     public function updateReport(Array $request, $id)
@@ -74,7 +72,7 @@ class ReportRepository extends BaseRepository implements ReportRepositoryInterfa
                         ->join($reportPendingTable, "{$reportPendingTable}.report_id", "=", "{$reportTable}.id")
                         ->addSelect("{$reportTable}.*")
                         ->addSelect("{$reportPendingTable}.is_finished")
-                        ->orderBy("{$reportTable}.id", 'ASC'); 
+                        ->orderBy("{$reportTable}.id", 'DESC'); 
 
         if($filters->has('site'))
             $search->where("{$reportTable}.site", 'like', '%'.$filters->getFilter('site').'%');

@@ -29,7 +29,6 @@ export default {
             this.isBusy = true;
             try{
                 const response = await axios.post('api/reports/audit', {reports: this.selectedReports}).then(response => (this.info = response))
-                console.log(reponse.data)
             }catch (err){
                 console.log(err)
             }

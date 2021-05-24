@@ -33,7 +33,7 @@
               </b-col>
               <b-col sm="2" v-if="!isEditing">
                   <br> 
-                  <b-button type="button" @click="addSite()" variant="danger">Adicionar</b-button>
+                  <b-button type="button" @click="addReport()" variant="primary">Adicionar2</b-button>
               </b-col>
             </b-row>
             <b-form-group id="input-group-3" label="Ferramenta" label-for="input-3">
@@ -78,7 +78,7 @@ export default {
       hasError: false,
       data: {
         id: null,
-        sites: [],
+        reports: [],
       },
       tools: [
         { text: 'Select One', value: null },
@@ -139,24 +139,24 @@ export default {
     onReset(event) {
       event.preventDefault()
       this.form = {}
-      this.data.sites = []
+      this.data.reports = []
       this.show = false
       this.$nextTick(() => {
         this.show = true
       })
     },
 
-    addSite() {
+    addReport() {
       if(!this.validate()){
           return
       }
       
-      const site = { url: this.form.site, tool_name: this.form.tool }
-      this.data.sites.push(site)
-      this.data.sites.reverse()
+      const report = { url: this.form.site, tool_name: this.form.tool }
+      this.data.reports.push(report)
+      this.data.reports.reverse()
       this.form = {}
 
-      this.$emit('sites', this.data.sites)
+      this.$emit('reports', this.data.reports)
     }
   }
 }

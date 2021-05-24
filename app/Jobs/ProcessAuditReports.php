@@ -20,7 +20,7 @@ class ProcessAuditReports implements ShouldQueue
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $tries = 5;
-    protected $reports;
+    protected $report;
     protected $reportRepository;
     protected $request;
     /**
@@ -30,11 +30,11 @@ class ProcessAuditReports implements ShouldQueue
      */
 
     // 
-    public function __construct(ReportRepositoryInterface $reportRepository, $reports)
+    public function __construct(ReportRepositoryInterface $reportRepository, Report $report)
     {
         // $this->report = $report;
         $this->reportRepository = $reportRepository;
-        $this->reports = $reports;
+        $this->report = $report;
     }
 
     /**
@@ -44,11 +44,11 @@ class ProcessAuditReports implements ShouldQueue
      */
     public function handle(Lighthouse $lighthouse)
     {
-        foreach ($this->reports as $report) {
+        // foreach ($this->reports as $report) {
             
-            $lighthouse->setSite($report['site']);
+            $lighthouse->setSite($this->report->site);
             $lighthouse->setCategories(['accessibility', 'performance']);
             $lighthouse->audit();
-        }
+        // }
     }
 }
