@@ -27,6 +27,8 @@
 
 <script>
 import ReportForm from './ReportForm.vue'
+import util  from '../util/index'
+
   export default {
   components: { ReportForm },
     data() {
@@ -44,7 +46,12 @@ import ReportForm from './ReportForm.vue'
           ]
         },
         reports: [],
-        hasReports: false
+        hasReports: false,
+        response: {
+          success: false,
+          message: "",
+          errors: []
+        }
       }
     },
     watch: {
@@ -60,32 +67,30 @@ import ReportForm from './ReportForm.vue'
         this.reports.splice(index, 1);
       },
 
-      makeToast(title, message, status) {
-       this.$bvToast.toast(message, {
-          title: `${title}`,
-          variant: status === false ? 'danger' : 'success',
-          solid: true,
-          append: false
-        })
-      },
-
       async saveReports()
       {
         try{
          
           const response = await axios.post('http://localhost:8000/api/reports/save', { reports: this.reports })
-          const data = response.data.data
-          const message = response.data.message
-          this.makeToast("Salvo com sucesso", message, response.data.status)
-          
+          this.response.success = response.data.success
+          this.response.message = response.data.message
+
         } catch (e)
         {
           console.log(e)
         }
 
-          // this.$router.push('/reports', ()=>{
-          //   this.makeToast("Salvo com sucesso", 'a', false)
-          // })
+        this.dealWithAfterSavingRecord()
+      },
+
+      dealWithAfterSavingRecord() {
+        if(this.response.success){
+          this.$router.push({ name: 'reports-list' }).then(() => {
+            util.criarAlertaToastDeSucesso(this, 'Aviso', 'Dados salvos com sucesso.')
+          })
+        } else {
+          util.criarAlertaToastDeErro(this, 'Aviso', this.retorno.mensagem)
+        }
       },
 
       async saveOrEditReport() {
@@ -106,13 +111,13 @@ import ReportForm from './ReportForm.vue'
         try{
           const reportId = this.$route.params.id
           const response = await axios.put(`http://localhost:8000/api/reports/${reportId}/update`, { tool_name: this.form.tool, site: this.form.site })
-          const data = response.data.data
-          const message = response.data.message
+          this.response.success = response.data.success
+          this.response.message = response.data.message
         } catch (e) {
           console.log(e)
         }
 
-        this.$router.push({name: 'reports-list',  params: {message: message} })
+        this.dealWithAfterSavingRecord()
       },
       getReports(reports)
       {

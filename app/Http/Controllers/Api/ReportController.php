@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Factories\GenericFactory;
 use App\Helpers\Lighthouse;
+use App\Helpers\QueueHelper;
 use App\Http\Requests\ReportPendingRequest;
 use App\Http\Requests\ReportRequest;
 use App\Http\Requests\TesteRequest;
@@ -13,6 +14,7 @@ use App\Repository\Interfaces\Jobs\JobRepositoryInterface;
 use App\Repository\Interfaces\Report\ReportRepositoryInterface;
 use App\VOs\Filters;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Spatie\Async\Pool;
 use Throwable;
 
@@ -62,9 +64,12 @@ class ReportController extends BaseApiController
             
             foreach($reports as $report){
                 $report = $this->reportRepository->saveReport($report);
-                $job = (new ProcessAuditReports($this->reportRepository, $report))->onQueue('audits');
+                $queueName = QueueHelper::getQueueName('audit', $report->id);
+                $job = (new ProcessAuditReports($this->reportRepository, $report));
                 $this->dispatch($job);
             }
+
+           
 
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage());
@@ -133,7 +138,8 @@ class ReportController extends BaseApiController
     public function audit(Request $request) {
         $data = $request->only('reports');
         $reports = $data['reports'];
-    
+        
+        // shell_exec('php artisan queue:work --once');
         try {
             foreach($reports as $report){
                 $job = (new ProcessAuditReports($this->reportRepository, $report))->onQueue('audits');

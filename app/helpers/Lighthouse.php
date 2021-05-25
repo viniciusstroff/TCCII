@@ -296,24 +296,25 @@ class Lighthouse {
             // . " > /dev/null &" //executar em segundo plano
 
      
-                $pool = Pool::create();
+                // $pool = Pool::create();
 
-                $pool->add(function() use($command){
+                // $pool->add(function() use($command){
                   
                         $process = new Process($command);
                         $process->setTimeout($this->timeout);
                         
                         $results = $process->run();
-                    return $results;
-                })->then(function ($results)  {
-                    // dd($results);
+                //     return $results;
+                // })->then(function ($results)  {
+                //     // dd($results);
 
-                });
+                // });
                 
-                $results = await($pool);
+                // $results = await($pool);
                
 
-                $this->hasFinished = true;
+                // $this->hasFinished = true;
+                $this->isRunning();
             
             return $results;
         }catch(\Exception $e){
