@@ -9,12 +9,15 @@ use App\Http\Requests\ReportPendingRequest;
 use App\Http\Requests\ReportRequest;
 use App\Http\Requests\TesteRequest;
 use App\Jobs\ProcessAuditReports;
+use App\Models\Job;
 use App\Models\Report;
 use App\Repository\Interfaces\Jobs\JobRepositoryInterface;
 use App\Repository\Interfaces\Report\ReportRepositoryInterface;
 use App\VOs\Filters;
+use Illuminate\Bus\Batch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Bus;
 use Spatie\Async\Pool;
 use Throwable;
 
@@ -61,12 +64,18 @@ class ReportController extends BaseApiController
         {
             $request = $request->only(['reports']);
             $reports = $request['reports'];
-            
             foreach($reports as $report){
                 $report = $this->reportRepository->saveReport($report);
                 $queueName = QueueHelper::getQueueName('audit', $report->id);
-                $job = (new ProcessAuditReports($this->reportRepository, $report));
-                $this->dispatch($job);
+                // ProcessAuditReports::dispatch($this->reportRepository, $report)->onQueue('audits');
+                // $job = (new ProcessAuditReports($this->reportRepository, $report))->onQueue('audits');
+                // $this->dispatch($job);
+
+                $batch = Bus::batch([
+                    (new ProcessAuditReports($this->reportRepository, $report))
+                ])->then(function (Batch $batch) {
+                    // All jobs completed successfully...
+                })->name('audits')->dispatch();
             }
 
            
@@ -138,11 +147,15 @@ class ReportController extends BaseApiController
     public function audit(Request $request) {
         $data = $request->only('reports');
         $reports = $data['reports'];
-        
+        $job = Job::find(1);
+        // dd(Job::find(1));
+
+        dd(Bus::findBatch('9382e9bd-fb96-4b34-9419-58693b40f999')->progress);
+        exit;
         // shell_exec('php artisan queue:work --once');
         try {
             foreach($reports as $report){
-                $job = (new ProcessAuditReports($this->reportRepository, $report))->onQueue('audits');
+                $job = (new ProcessAuditReports($this->reportRepository, $report));
                 $this->dispatch($job);
             }
         

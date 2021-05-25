@@ -32,6 +32,7 @@ class ProcessAuditReports implements ShouldQueue
     // 
     public function __construct(ReportRepositoryInterface $reportRepository, $report)
     {
+        $this->onQueue('audits');
         $this->report = $report;
         $this->reportRepository = $reportRepository;
         // $this->report = $report;

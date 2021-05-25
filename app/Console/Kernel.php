@@ -25,6 +25,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->command('queue:listen --queue=audits')->everyMinute()-> appendOutputTo (base_path('app/console/output.log'));
     }
 
     /**
