@@ -59,7 +59,7 @@
       <b-col cols="6">
         <b-button size="sm" @click="selectAllRows">Selecionar todos</b-button>
         <b-button size="sm" @click="clearSelected">Desmarcar</b-button>
-        <b-button size="sm" variant="primary" @click="auditSelectedReports()">Auditar Selecionados</b-button>
+        <b-button size="sm" :disabled="disabled" variant="primary" @click="auditSelectedReports()">Auditar Selecionados</b-button>
       </b-col>
       <b-col cols="3">
         <b-pagination
@@ -72,5 +72,4 @@
   </div>
 </template>
 <script src="./js/report-table.js">
-
 </script>

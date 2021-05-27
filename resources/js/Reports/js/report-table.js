@@ -27,6 +27,11 @@ export default {
 
         filter: {
             type: String
+        },
+        
+        isBusy: {
+            type: Boolean,
+            defult: false
         }
 
     },
@@ -45,10 +50,10 @@ export default {
                 {key: 'updated_at', label: 'Atualizado em', sortable: true },
                 {key: 'options', label: 'Opções'}
             ],
-            isBusy: false,
             info: null,
             filterOn: [],
             selectedReports: [],
+            disabled: true,
             currentPage: 1
 
         }
@@ -62,7 +67,7 @@ export default {
         async remove(id) {
             this.isBusy = true;
             try{
-                const response = await axios.delete(`http://localhost:8000/api/reports/${id}/remove`).then(response => (this.info = response))
+                const response = await this.axios.delete(`/api/reports/${id}/remove`).then(response => (this.info = response))
                 
                 if(response.data.success === true){
                     this.reports = this.reports.filter(report => report.id !== id)
@@ -80,7 +85,14 @@ export default {
             this.$refs.reportsTable.clearSelected()
         },
         onRowSelected(items) {
-            this.selectedReports = items
+            const listOfReportsId = items.reduce(function(accumulator, element) {
+                if(element.id){
+                    accumulator.push(element.id)
+                }
+                return accumulator
+            }, [])
+            this.selectedReports = listOfReportsId
+            this.disabled = this.selectedReports.length > 10 || this.selectedReports.length <= 0
         },
         auditSelectedReports() {
             this.$emit('selectedReports', this.selectedReports)

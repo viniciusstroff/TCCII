@@ -20,7 +20,7 @@ const routes = [
         component: ReportAdd
     },
     {
-        path: '/report/:id',
+        path: '/reports/report/:id',
         name: 'report-edit',
         component: ReportAdd
     },

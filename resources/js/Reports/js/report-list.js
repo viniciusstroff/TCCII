@@ -20,15 +20,17 @@ export default {
     },
     watch: {
         selectedReports: function (val) {
-            if(this.selectedReports !== undefined && this.selectedReports.length > 0 )
+            if(this.selectedReports !== undefined && this.selectedReports.length > 0 ){
+                this.selectedReports = val
                 this.auditSelectedReports()
+            }
         }
     },
     methods: {
         async auditSelectedReports() {
             this.isBusy = true;
             try{
-                const response = await axios.post('api/reports/audit', {reports: this.selectedReports}).then(response => (this.info = response))
+                const response = await this.axios.post('/api/reports/audit', {reports: this.selectedReports}).then(response => (this.info = response))
             }catch (err){
                 console.log(err)
             }
@@ -38,21 +40,11 @@ export default {
         getSearched(searched) {
             this.search = searched
         },
-        async getReports(){
-            this.isBusy = true;
-            try{
-                const response = await axios.get('api/reports/').then(response => (this.info = response))
-                this.reports = response.data.data
-            }catch (err){
-                console.log(err)
-            }
-            this.isBusy = false
-        },
 
         async searchReports() {
             this.isBusy = true
             try{
-                const response = await axios.post('api/reports/search', {})
+                const response = await axios.post('/api/reports/search', {})
                 this.reports = response.data.data.data
             }catch (err){
                 console.log(err)
@@ -67,7 +59,7 @@ export default {
         async remove(id) {
             this.isBusy = true;
             try{
-                const response = await axios.delete(`http://localhost:8000/api/reports/${id}/remove`).then(response => (this.info = response))
+                const response = await axios.delete(`/api/reports/${id}/remove`).then(response => (this.info = response))
                 
                 if(response.data.success === true){
                     this.reports = this.reports.filter(report => report.id !== id)

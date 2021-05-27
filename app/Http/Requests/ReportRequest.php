@@ -24,9 +24,8 @@ class ReportRequest extends FormRequest
     public function rules()
     {
         return [
-            'sites.*' => 'required|array|max:100',
-            'sites.*.url' => 'required|url|max:100',
-            'sites.*.tool_name' => 'required|max:100',
+            'site' => 'required|url|max:100',
+            'tool_name' => 'required|max:100',
 
         ];
     }
@@ -34,14 +33,9 @@ class ReportRequest extends FormRequest
     public function messages()
     {
         return [
-            'sites.*.required' => 'Preencha pelo menos um site!',
-            'sites.*.url' => [
-                'required' => 'Campo Obrigatório',
-                'url' => 'Formato inválido'
-            ],
-            'sites.*.tool_name' => [
-                'required' => 'Campo Obrigatório'
-            ],
+            'site.required' => 'Campo Obrigatório!',
+            'site.url' => 'Formato inválido',
+            'tool_name.required' => 'Campo Obrigatório',
         ];
     }
 }

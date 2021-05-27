@@ -16,11 +16,9 @@ class CreateReportsTable extends Migration
     {
         Schema::create('reports', function (Blueprint $table) {
             $table->id();
-            $table->string('tool_name');
+            $table->string('tool_name')->default('lighthouse');
             $table->string('site');
-            $table->string('file_name');
-            $table->string('file_format');
-            $table->string('file_fake_name');
+            $table->boolean('status')->default(false);
             $table->timestamps();
         });
     }

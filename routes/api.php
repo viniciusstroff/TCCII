@@ -32,19 +32,13 @@ Route::middleware('api')->group(function () {
     Route::apiResource('reports-pending', ReportPendingController::class);
     // Route::apiResource('reports', ReportController::class);
 
-    Route::get('/reports', 'App\Http\Controllers\Api\ReportController@index');
-    Route::get('/reports/{id}', 'App\Http\Controllers\Api\ReportController@show');
+    // Route::get('/reports', 'App\Http\Controllers\Api\ReportController@index');
+    Route::get('/reports/report/{id}', 'App\Http\Controllers\Api\ReportController@show');
     Route::post('/reports/save', 'App\Http\Controllers\Api\ReportController@store');
     Route::put('/reports/{id}/update', 'App\Http\Controllers\Api\ReportController@update');
     Route::delete('/reports/{id}/remove', 'App\Http\Controllers\Api\ReportController@destroy');
     Route::post('/reports/search', 'App\Http\Controllers\Api\ReportController@search');
     Route::post('/reports/audit', 'App\Http\Controllers\Api\ReportController@audit');
-    Route::post('/reports/teste', 'App\Http\Controllers\Api\ReportController@teste');
-
-    Route::get('/reports-pending', 'App\Http\Controllers\Api\ReportPendingController@index');
-    Route::post('/reports-pending/audit', 'App\Http\Controllers\Api\ReportPendingController@audit');
-    Route::get('/reports-pending/finished/{id}', 'App\Http\Controllers\Api\ReportPendingController@finishedReport');
-    Route::post('/reports-pending/search', 'App\Http\Controllers\Api\ReportPendingController@search');
 
 
 

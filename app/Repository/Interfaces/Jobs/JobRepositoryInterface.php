@@ -8,4 +8,5 @@ use Illuminate\Http\Request;
 interface JobRepositoryInterface {
 
     public function getJob($classname, $column, $value);
+    public function getJobsByQueue($queue);
 }

@@ -23,4 +23,12 @@ class JobRepository implements  JobRepositoryInterface{
         // $reportsPending = ReportPending::select('*')->orderBy("is_finished", "asc")->get();
         // return $reportsPending->toArray();
     }
+
+    public function getJobsByQueue($queue)
+    {
+        $job = Job::where("queue", '=', "{$queue}")
+                    ->select('id')
+                    ->get();
+        return $job->toArray();
+    }
 }

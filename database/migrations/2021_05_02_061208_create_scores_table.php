@@ -15,11 +15,11 @@ class CreateScoresTable extends Migration
     {
         Schema::create('scores', function (Blueprint $table) {
             $table->id();
-            $table->double('accessibility');
-            $table->double('performance');
-            $table->double('seo');
-            $table->double('pwa');
-            $table->double('best-pratices');
+            $table->double('accessibility')->nullable();
+            $table->double('performance')->nullable();
+            $table->double('seo')->nullable();
+            $table->double('pwa')->nullable();
+            $table->double('best-pratices')->nullable();
             $table->foreignId('report_id')->constrained('reports');
             $table->timestamps();
         });

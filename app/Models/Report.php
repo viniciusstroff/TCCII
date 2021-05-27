@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use App\Helpers\DateHelper;
+use App\Helpers\UrlHelper;
+use Carbon\Carbon;
+use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,6 +14,8 @@ class Report extends Model
     use HasFactory;
 
     const TABLE_NAME = "reports";
+    const PENDING_STATUS = 0;
+    const FINISHED_STATUS = 1;
 
     protected $table = self::TABLE_NAME;
     protected $id = 'id';
@@ -22,40 +28,41 @@ class Report extends Model
     protected $fillable = [
         'id',
         'tool_name',
-        'site',
-        'file_name',
-        'file_format',
-        'file_fake_name',
-        'created_at',
-        'updated_at'
+        'site'
     ];
 
-    protected $casts = [
-        'created_at' => 'datetime:d/m/Y H:i:s',
-        'updated_at' => 'datetime:d/m/Y H:i:s'
-    ];
+    // protected $casts = [
+    //     'created_at' => 'datetime:d/m/Y',
+    //     'updated_at' => 'datetime:d/m/Y'
+    // ];
 
 
-    public function reportPending()
+    public function reportDocuments()
     {
-        return $this->hasOne(ReportPending::class);
+        return $this->hasMany(ReportDocument::class);
     }
 
-    public function getFileFakeNameAttriute()
+    public function getCreatedAtAttribute($createdAt)
     {
-        return $this->getFileFakeName();
+        return DateHelper::convertDateToBrazilianFormat($createdAt);
     }
 
-    public function setFileFakeNameAttribute($value) 
+    public function getUpdatedAtAttribute($updatedAt)
     {
-        $fileFakeName = $this->getFileFakeName($value);
-        $this->attributes['file_fake_name'] = $fileFakeName;
+        return DateHelper::convertDateToBrazilianFormat($updatedAt);
     }
 
-    public function getFileFakeName($value = null)
-    {   
-        $fileFakeName = $value ? $value : $this->file_fake_name;
-            
-        return "{$fileFakeName}.{$this->file_format}";
+
+    public function setCreatedAtAttribute($createdAt)
+    {
+        $this->attributes['created_at'] = DateHelper::convertDateToIsoFormat($createdAt);
     }
+
+    public function setUpdatedAtAttribute($updatedAt)
+    {
+        $this->attributes['updated_at'] = DateHelper::convertDateToIsoFormat($updatedAt);
+    }
+
+   
+
 }

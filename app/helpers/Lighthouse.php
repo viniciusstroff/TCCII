@@ -3,6 +3,7 @@ namespace App\Helpers;
 
 use App\Console\Process;
 use App\Exceptions\AuditFailedException;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use phpDocumentor\Reflection\Types\Boolean;
@@ -15,17 +16,19 @@ class Lighthouse {
     protected ?String $command = null;
     protected ?String $nodePath = null;
     protected ?String $configPath = null;
-    protected Array $outputFormat = ['--output=json'];
-    protected String $outputPath = '/app/console/outputs/';
+    protected Array $outputFormat = ['json'];
+    protected String $outputPath = 'storage/reports/';
     protected String $outputFile = "myfile234.report";
     protected Array $headers = [];
     protected Array $options = [];
     protected $config = null;
     protected Array $categories = [];
     protected $environmentVariables = [];
-    protected $timeout = 40;
+    protected $timeout = 120;
     protected String $defaultFormat = 'json';
     protected String $format = "";
+
+    protected String $relativePath = "";
 
   
 
@@ -42,6 +45,7 @@ class Lighthouse {
         $this->setSite($site);
         
         $this->setNodePath();
+        $this->setOutputPath();
         $this->setOutputFormat('json');
         $this->setOutputFile();
         $this->setOutput();
@@ -55,6 +59,7 @@ class Lighthouse {
     {
 
     }
+
     public function setChromeFlags($flags)
     {
         if (is_array($flags)) {
@@ -71,18 +76,34 @@ class Lighthouse {
         $this->nodePath = $path;
     }
 
+    public function setOutputPath()
+    {
+        $fullPath = FileHelper::createDirBySite($this->site);
+        $this->outputPath = $fullPath;
+        $this->setRelativePath();
+    }
+
+    public function setRelativePath()
+    {
+        $relativePath = str_replace(storage_path('app\reports'), "", $this->outputPath);
+        $this->relativePath = $relativePath;
+    }
+
     public function setOutputFile(?String $filename = null)
     {
         $filename = UrlHelper::getOnlySiteName($this->site);
-        $file =  base_path($this->outputPath . $filename ) . ".{$this->format}";
+        $time = Carbon::now()->format('H-i-s');
+        $file =  "{$this->relativePath}/{$filename}{$time}.{$this->format}";
         $file = str_replace(["\\", "//"], "/", $file);
         $this->outputFile = $file;
     }
 
     public function setOutput(?String $file = null)
     {
+        $basePath = storage_path('app\reports');
         $file = is_null($file) ? $this->outputFile : $file;
-        $this->setOption('--output-path', $file);
+        $fullPath = "{$basePath}{$file}";
+        $this->setOption('--output-path', $fullPath);
     }
 
     public function setSite(?String $url)
@@ -118,12 +139,12 @@ class Lighthouse {
     public function getOutputFormat() : String 
     {
 
-        return implode(" ", $this->outputFormat);
+        return $this->format;
     }
 
     public function getOutputFile() : String 
     {
-
+        
         return $this->outputFile;
     }
 
@@ -263,7 +284,7 @@ class Lighthouse {
     }
     public function isRunning()
     {
-        $start = microtime(true);
+        $start = microtime(true);   
         do {
             if (file_exists($this->outputFile)) {
                 $this->hasFinished = true;
@@ -284,6 +305,11 @@ class Lighthouse {
         ];
         $json = json_encode($array);
         return $json;
+    }
+
+    public function setTimeOut($timemout = 60)
+    {
+        $this->timeout = $timemout;
     }
 
     public function audit()

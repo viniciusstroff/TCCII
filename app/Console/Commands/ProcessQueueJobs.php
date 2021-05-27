@@ -11,7 +11,7 @@ class ProcessQueueJobs extends Command
      *
      * @var string
      */
-    protected $signature = 'queue:work {--once}';
+    protected $signature = 'teste';
 
     /**
      * The console command description.

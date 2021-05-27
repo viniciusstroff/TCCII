@@ -6,6 +6,10 @@ const criarAlertaToast = (componente, titulo, estilo, mensagem, solido = true) =
     })
 }
 
+const mapearObjetos = (objetoOrigem, objetoDestino) => {
+    return window.$.extend(objetoDestino, objetoOrigem);
+}
+
 const criarAlertaToastDeSucesso = (componente, titulo, mensagem) => {
     criarAlertaToast(componente, titulo, 'success', mensagem)
 }
@@ -16,6 +20,7 @@ const criarAlertaToastDeErro = (componente, titulo, mensagem) => {
 export default {
     criarAlertaToast,
     criarAlertaToastDeErro,
-    criarAlertaToastDeSucesso
+    criarAlertaToastDeSucesso,
+    mapearObjetos
 
 }

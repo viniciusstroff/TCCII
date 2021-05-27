@@ -131,9 +131,6 @@ class Process
 
             
             $pool = Pool::create();    
-            // $this->isRunning = true;
-            // $this->command .=  "  2>dev/null >&- <&- >/dev/null &";
-            // dd($this->command);
             $pool->add(function(){
                 $this->isRunning = true;
                 error_reporting(E_ALL);
@@ -142,7 +139,7 @@ class Process
                     pclose($process); 
                 }
                 else {
-                    exec($this->command . " > /dev/null &", $output, $this->exitCode);  
+                    $output = exec($this->command . " > /dev/null &", $output, $this->exitCode);  
                     
                     $this->output = $output;
                 }
