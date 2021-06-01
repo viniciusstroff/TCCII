@@ -15,4 +15,5 @@ interface ReportRepositoryInterface {
     public function saveReportDocuments(Array $report);
     public function searchByFilters(Filters $filters, $paginate = false, $perPage = 15);
     public function getPendingReports();    
+    public function updateReportStatus($id, $status = 1);
 }

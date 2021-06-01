@@ -30,10 +30,6 @@
                   ></b-form-input>
               </b-form-group>
               </b-col>
-              <b-col sm="2" class="mt-4" v-if="!isEditing">
-                  
-                  <b-button type="button" @click="addReport()" variant="primary">Adicionar</b-button>
-              </b-col>
             </b-row>
             <b-form-group id="input-group-3" label="Ferramenta" label-for="input-3">
                 <b-form-select

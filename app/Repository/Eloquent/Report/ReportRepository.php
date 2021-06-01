@@ -62,19 +62,16 @@ class ReportRepository implements ReportRepositoryInterface {
             $isEditing = CreateRegisterHelper::isEditing($request, 'id');
             if($isEditing){
                 $report = $this->find($request['id']);
-                $lighthouse = new Lighthouse($report->site);
-                $lighthouse->setCategories(['accessibility', 'performance']);
-                dd($lighthouse->audit());
                 $report->update($request);
             } else {
                 $report = $this->report->create($request);
             }
-           
+
             $queueName = QueueHelper::getQueueName('audit', $report->id);
-            ProcessAuditReports::dispatch($report)->onQueue($queueName);
+            ProcessAuditReports::dispatch($report)->onQueue('audits');
+           
             
         } catch (\Exception $e) {
-            dd($e);
             throw new \Exception("Problemas ao salvar um relatorio, {$e->getMessage()}");
         }
         return $this->report;
@@ -83,20 +80,17 @@ class ReportRepository implements ReportRepositoryInterface {
     public function saveReportDocuments(Array $request) {
         try {
             $report = $this->reportDocument->create($request);
-            //$this->report->create($request->all());
-            // $this->report->tool_name = $report['tool_name'];
-            // $this->report->site = $report['url'];
-            // $this->report->file_format = 'json';
-            // $this->report->file_fake_name = $siteName;
-            // $this->report->file_name = uniqid ();
-            // $this->report->save();
-            
-                $queueName = QueueHelper::getQueueName('audit', $report->id);
-                ProcessAuditReports::dispatch($report)->onQueue($queueName);
         } catch (\Exception $e) {
             throw new \Exception("Problemas ao salvar um relatorio, {$e->getMessage()}");
         }
         return $report;
+    }
+
+    public function updateReportStatus($id, $status = 1)
+    {
+        $request['status'] = $status;
+        $request['id'] = $id;
+        $this->saveReport($request);
     }
 
     public function searchByFilters(Filters $filters, $paginate = false, $perPage = 15)
@@ -106,6 +100,7 @@ class ReportRepository implements ReportRepositoryInterface {
 
         
         $search = Report::query()
+                        ->where("status", "=", Report::PENDING_STATUS)
                         ->addSelect("{$reportTable}.*")
                         ->addSelect("{$reportDocuments}.file_fake_name")
                         ->leftJoin("{$reportDocuments}", "report_id" , "=", "{$reportTable}.id")
@@ -125,9 +120,11 @@ class ReportRepository implements ReportRepositoryInterface {
 
     public function getPendingReports()
     {
-
-        $reportsPending = Report::select('*')
-                            ->where("status", "=", Report::PENDING_STATUS)    
+        $reportDocumentsTable = ReportDocument::TABLE_NAME;
+        $reportTable = Report::TABLE_NAME;
+        $reportsPending = Report::where("status", "=", Report::PENDING_STATUS)
+                            ->select("{$reportTable}.*", "{$reportDocumentsTable}.file_name", "{$reportDocumentsTable}.file_format", "{$reportDocumentsTable}.file_fake_name")  
+                            ->join("{$reportDocumentsTable}", "report_id", "=", "{$reportTable}.id")
                             ->orderBy("status", "asc")->get();
         return $reportsPending->toArray();
     }

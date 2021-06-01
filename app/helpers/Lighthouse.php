@@ -24,7 +24,7 @@ class Lighthouse {
     protected $config = null;
     protected Array $categories = [];
     protected $environmentVariables = [];
-    protected $timeout = 120;
+    protected $timeout = 60;
     protected String $defaultFormat = 'json';
     protected String $format = "";
 
@@ -42,19 +42,23 @@ class Lighthouse {
 
     public function __construct(String $site = null)
     {
+        
+    }
+
+    public function build(String $site)
+    {
         $this->setSite($site);
         
         $this->setNodePath();
         $this->setOutputPath();
         $this->setOutputFormat('json');
+        $this->setTimeOut(60);
         $this->setOutputFile();
         $this->setOutput();
         $this->setLogging();
         $this->setChromeFlags(['--disable-gpu', '--no-sandbox']);
         $this->setOption("--verbose", true);
-        
     }
-
     public function configure()
     {
 
@@ -93,7 +97,7 @@ class Lighthouse {
     {
         $filename = UrlHelper::getOnlySiteName($this->site);
         $time = Carbon::now()->format('H-i-s');
-        $file =  "{$this->relativePath}/{$filename}{$time}.{$this->format}";
+        $file =  "{$this->relativePath}/{$filename}-{$time}.{$this->format}";
         $file = str_replace(["\\", "//"], "/", $file);
         $this->outputFile = $file;
     }
@@ -285,16 +289,15 @@ class Lighthouse {
     public function isRunning()
     {
         $start = microtime(true);   
-        do {
+        while(!file_exists($this->outputFile)){
             if (file_exists($this->outputFile)) {
                 $this->hasFinished = true;
                 break;
             }
-
-            if(microtime(true) - $start >= $this->timeout) {
+            if((microtime(true) - $start ) >= $this->timeout){
                 break;
             }
-        } while(!file_exists($this->outputFile));
+        }
     }
 
     private function mapOnlyNecessaryToJson(Object $object)
@@ -307,9 +310,10 @@ class Lighthouse {
         return $json;
     }
 
-    public function setTimeOut($timemout = 60)
+    public function setTimeOut($timemout = 30)
     {
         $this->timeout = $timemout;
+        $this->setOption('--max-wait-for-load', $timemout);
     }
 
     public function audit()
@@ -339,8 +343,8 @@ class Lighthouse {
                 // $results = await($pool);
                
 
-                // $this->hasFinished = true;
-                $this->isRunning();
+                $this->hasFinished = true;
+                // $this->isRunning();
             
             return $results;
         }catch(\Exception $e){

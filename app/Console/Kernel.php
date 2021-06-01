@@ -2,8 +2,10 @@
 
 namespace App\Console;
 
+use App\Jobs\ProcessUpdateReportStatus;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\DB;
 
 class Kernel extends ConsoleKernel
 {
@@ -24,8 +26,15 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
-        // $schedule->command('queue:listen --queue=audits')->everyMinute()-> appendOutputTo (base_path('app/console/output.log'));
+        //php artisan schedule:work
+        $logPath = storage_path("logs/kernel/kernel".date('Y-m-d-H-i-s').".log");
+        $schedule->command('queue:work', ['--queue' => 'audits', '--max-jobs' => 1 , '--timeout' => 120])
+                            ->everyTwoMinutes()
+                            ->appendOutputTo($logPath);
+
+
+        ProcessUpdateReportStatus::dispatchSync();
+
     }
 
     /**

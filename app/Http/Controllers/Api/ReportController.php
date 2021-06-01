@@ -126,23 +126,18 @@ class ReportController extends BaseApiController
     public function audit(Request $request) {
         $data = $request->only('reports');
         $listOfReportsId = $data['reports'];
-        // dd($this->jobRepository->getJobsByQueue('audit_7'));
-        // dd(FileHelper::createDirBySite($reports[0]['site']));
-        
         try {
-            dd(Artisan::call('queue:work', ['--queue' => 'audit_24', '--max-jobs' => 2]));
-            foreach($listOfReportsId as $key => $reportId){
-                $queueName = QueueHelper::getQueueName('audit', $reportId);
-                
-            }
-            // $job
-            // Artisan::call('queue:work', [])
+            
+            // foreach($listOfReportsId as $key => $reportId){
+            //     $queueName = QueueHelper::getQueueName('audit', $reportId);
+                // Artisan::call('queue:work', ['--queue' => 'audit_21', '--max-jobs' => 2, '--timeout' => 120]);
+                Artisan::call('queue:work', ['--max-jobs' => 2, '--timeout' => 120]);
+            // }
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage(), "Ocorreu algum erro ao utilizar a fila");
         }
         
 
         return $this->sendResponse([], "Audição sendo executada em segundo plano");
-
     }
 }

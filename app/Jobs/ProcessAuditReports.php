@@ -43,22 +43,33 @@ class ProcessAuditReports implements ShouldQueue
      *
      * @return void
      */
-    public function handle(ReportRepositoryInterface $reportRepository, Lighthouse $lighthouse)
+    public function handle(ReportRepositoryInterface $reportRepository)
     {       
+        $this->reportRepository = $reportRepository;
+            try{
             $documentsData = [];
-        // foreach ($this->reports as $report) {
-            $lighthouse->setSite($this->report->site);
+            $lighthouse = new Lighthouse();
+            $lighthouse->build($this->report->site);
             $lighthouse->setCategories(['accessibility', 'performance']);
             $lighthouse->setTimeOut($this->timeout);
             $lighthouse->audit();
 
-            if($lighthouse->hasFinished()){
+            // if($lighthouse->hasFinished()){
                 $documentsData['file_fake_name'] = $lighthouse->getSite();
                 $documentsData['file_format'] = $lighthouse->getOutputFormat();
                 $documentsData['file_name'] = $lighthouse->getOutputFile();
                 $documentsData['report_id'] = $this->report->id;
-                // $this->reportRepository->saveReportDocuments($documentsData);
+                $this->reportRepository->saveReportDocuments($documentsData);
+            // }
+                
+        //
+            }catch(\Exception $e){
+                dd($e);
             }
-        // }
+    }
+
+    public function uniqueId()
+    {
+        return $this->report->id;
     }
 }

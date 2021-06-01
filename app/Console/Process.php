@@ -36,7 +36,7 @@ class Process
         $this->command =  implode(" ", $commands);
     }
 
-    public function setTimeout(Int $timeout = 60)
+    public function setTimeout(Int $timeout = 120)
     {
         ini_set('max_execution_time', $timeout);
         $this->timeout = $timeout;

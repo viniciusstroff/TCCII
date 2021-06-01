@@ -74,20 +74,6 @@ export default {
     setError(message){
       this.errors.push(message);
     },
-    
-    validate(){
-      this.errors = [];
-       this.hasError = false
-
-      if(!this.form.site)
-        this.setError('O campo Site é obrigatório.');
-      if(!this.form.tool)
-        this.setError('O campo Ferramenta é obrigatória.');
-      
-      const isValid = (this.errors.length > 0 ) ? false : true
-      this.hasError = !isValid
-      return isValid
-    },
 
     onReset(event) {
       event.preventDefault()
@@ -98,18 +84,5 @@ export default {
         this.show = true
       })
     },
-
-    addReport() {
-      if(!this.validate()){
-          return
-      }
-      
-      const report = { site: this.form.site, tool_name: this.form.tool }
-      this.data.reports.push(report)
-      this.data.reports.reverse()
-      this.form = {}
-
-      this.$emit('reports', this.data.reports)
-    }
   }
 }
