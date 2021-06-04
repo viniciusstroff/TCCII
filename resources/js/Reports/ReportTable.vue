@@ -35,7 +35,7 @@
           >
         </template>
 
-        <template #cell(is_finished)="data">
+        <template #cell(status)="data">
           <template v-if="data.value === 0">
             <b-badge variant="warning">Pendente</b-badge>
           </template>

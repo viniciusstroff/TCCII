@@ -114,6 +114,7 @@ class ReportController extends BaseApiController
     public function search(Request $request)
     {
         $filters = ($request->has('filters')) ? $request->input('filters') : [];
+        
         try {
             $filters = $this->genericFactory->getInstance(Filters::class, $filters);
             $reports = $this->reportRepository->searchByFilters($filters, $paginate = true);

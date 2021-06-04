@@ -2,7 +2,7 @@
     <div class="container">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
         <router-link :to="{ name: 'home' }" class="navbar-brand"
-            >Laravel-Vue SPA</router-link
+            >Sistema de audições</router-link
         >
             <button
                 class="navbar-toggler"

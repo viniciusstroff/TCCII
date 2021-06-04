@@ -45,7 +45,7 @@ export default {
                 {key: 'file_fake_name', label: '    Arquivo', sortable: true },
                 {key: 'site',  label: 'Site', sortable: true },
                 {key: 'tool_name', label: 'Ferramenta', sortable: true },
-                {key: 'is_finished', label: 'Status', sortable: true },
+                {key: 'status', label: 'Status', sortable: true },
                 {key: 'created_at', label: 'Criado em', sortable: true },
                 {key: 'updated_at', label: 'Atualizado em', sortable: true },
                 {key: 'options', label: 'Opções'}

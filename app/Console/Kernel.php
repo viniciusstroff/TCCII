@@ -15,7 +15,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        Commands\ProcessUpdateReportStatus::class,
     ];
 
     /**
@@ -27,13 +27,12 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         //php artisan schedule:work
-        $logPath = storage_path("logs/kernel/kernel".date('Y-m-d-H-i-s').".log");
+        $logPath = storage_path("logs/kernel/kernel".date('Y-m-d').".log");
         $schedule->command('queue:work', ['--queue' => 'audits', '--max-jobs' => 1 , '--timeout' => 120])
                             ->everyTwoMinutes()
                             ->appendOutputTo($logPath);
 
-
-        ProcessUpdateReportStatus::dispatchSync();
+        $schedule->command('reports:is_finished')->everyMinute()->appendOutputTo( storage_path("logs/kernel/teste123.log"));        
 
     }
 
@@ -45,6 +44,7 @@ class Kernel extends ConsoleKernel
     protected function commands()
     {
         $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__.'/Commands/ProcessUpdateReportStatus');
 
         require base_path('routes/console.php');
     }

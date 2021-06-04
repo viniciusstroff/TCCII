@@ -13,6 +13,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Http\Request;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Async\Pool;
 
@@ -44,18 +45,21 @@ class ProcessUpdateReportStatus implements ShouldQueue
      * @return void
      */
     public function handle(ReportRepositoryInterface $reportRepository)
-    {       
+    {      
         $this->reportRepository = $reportRepository;
+       
             try{
                 $pendingReports = $this->reportRepository->getPendingReports();
                 foreach($pendingReports as $report){
                     $reportsStorage = storage_path("reports{$report['file_name']}.{$report['file_format']}");
+
                     if(Storage::disk()->exists($reportsStorage)){
-                        $this->reportRepository->updateReportStatus($report['id'], $status = 1);
+                        $this->reportRepository->updateReportStatus($report['id'], Report::FINISHED_STATUS);
+                        Log::info("Arquivo $reportsStorage encontrado, e atualizado o status do relatório de id: {$report['id']} com sucesso");
                     }
 
                     if(Storage::disk()->missing($reportsStorage)){
-
+                        Log::alert("Não foi encontrado o arquivo $reportsStorage");
                     }
                 }
             // }

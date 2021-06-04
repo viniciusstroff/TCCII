@@ -23,3 +23,6 @@ dev
 rodar processo de fila
 
 - php artisan queue:work --queue={nome_da_fila} ou php artisan queue:listen 
+- php artisan schedule:work ou php artisan schedule:run  // executar tarefas agendadas
+- php artisan schedule:list // ver a lista de tarefas e proxima vez a ser executada  e intervalo
+

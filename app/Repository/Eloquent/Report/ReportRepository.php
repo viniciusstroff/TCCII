@@ -57,19 +57,17 @@ class ReportRepository implements ReportRepositoryInterface {
     public function saveReport(Array $request)
     {
         try{
-            $siteName = UrlHelper::getOnlySiteName($request['site']);
-
+           
             $isEditing = CreateRegisterHelper::isEditing($request, 'id');
             if($isEditing){
                 $report = $this->find($request['id']);
                 $report->update($request);
             } else {
                 $report = $this->report->create($request);
-            }
 
-            $queueName = QueueHelper::getQueueName('audit', $report->id);
-            ProcessAuditReports::dispatch($report)->onQueue('audits');
-           
+                $queueName = QueueHelper::getQueueName('audit', $report->id);
+                ProcessAuditReports::dispatch($report)->onQueue('audits');
+            }
             
         } catch (\Exception $e) {
             throw new \Exception("Problemas ao salvar um relatorio, {$e->getMessage()}");
@@ -100,7 +98,7 @@ class ReportRepository implements ReportRepositoryInterface {
 
         
         $search = Report::query()
-                        ->where("status", "=", Report::PENDING_STATUS)
+                        // ->where("status", "=", Report::PENDING_STATUS)
                         ->addSelect("{$reportTable}.*")
                         ->addSelect("{$reportDocuments}.file_fake_name")
                         ->leftJoin("{$reportDocuments}", "report_id" , "=", "{$reportTable}.id")
