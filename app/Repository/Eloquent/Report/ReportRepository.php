@@ -2,6 +2,7 @@
 
 namespace App\Repository\Eloquent\Report;
 
+use App\DTOs\Reports\ReportScoreDTO;
 use App\Factories\GenericFactory;
 use App\Helpers\CreateRegisterHelper;
 use App\Helpers\Lighthouse;
@@ -10,6 +11,7 @@ use App\Helpers\UrlHelper;
 use App\Jobs\ProcessAuditReports;
 use App\Models\Report;
 use App\Models\ReportDocument;
+use App\Models\ReportScore;
 use App\Repository\Eloquent\BaseRepository;
 use App\Repository\Interfaces\Report\ReportRepositoryInterface;
 use App\VOs\Filters;
@@ -20,6 +22,7 @@ class ReportRepository implements ReportRepositoryInterface {
 
     protected Model $report;
     protected Model $reportDocument;
+    protected Model $reportScore;
     protected $factory;
 
     public function __construct(GenericFactory $factory)
@@ -28,6 +31,7 @@ class ReportRepository implements ReportRepositoryInterface {
        $this->factory = $factory;  
        $this->report = $this->factory->getInstance(Report::class);  
        $this->reportDocument = $this->factory->getInstance(ReportDocument::class);
+       $this->reportScore = $this->factory->getInstance(ReportScore::class);
     //    parent::__construct($report);
     }
 
@@ -45,7 +49,8 @@ class ReportRepository implements ReportRepositoryInterface {
 
     public function delete($id)
     {
-        try{
+        try
+        {
             $report = $this->find($id);
             // $report->reportPending()->delete();
             $report->delete();
@@ -56,7 +61,8 @@ class ReportRepository implements ReportRepositoryInterface {
 
     public function saveReport(Array $request)
     {
-        try{
+        try
+        {
            
             $isEditing = CreateRegisterHelper::isEditing($request, 'id');
             if($isEditing){
@@ -76,12 +82,33 @@ class ReportRepository implements ReportRepositoryInterface {
     }
 
     public function saveReportDocuments(Array $request) {
-        try {
+        try 
+        {
             $report = $this->reportDocument->create($request);
         } catch (\Exception $e) {
             throw new \Exception("Problemas ao salvar um relatorio, {$e->getMessage()}");
         }
         return $report;
+    }
+
+    public function saveReportScore(ReportScoreDTO $reportScoreDTO)
+    {
+        try
+        {
+
+            $report = $this->reportScore->create(
+                [
+                    'accessibility' => $reportScoreDTO->getAccessibility()->get('score'),
+                    'performance' => $reportScoreDTO->getPerformance()->get('score'),
+                    'report_id' => $reportScoreDTO->getReportId()
+                ]
+            );
+
+            return $report;
+        } catch (\Exception $e)
+        {
+            throw new \Exception("Problemas ao salvar um relatorio, {$e->getMessage()}");
+        }
     }
 
     public function updateReportStatus($id, $status = 1)
@@ -125,6 +152,49 @@ class ReportRepository implements ReportRepositoryInterface {
                             ->join("{$reportDocumentsTable}", "report_id", "=", "{$reportTable}.id")
                             ->orderBy("status", "asc")->get();
         return $reportsPending->toArray();
+    }
+
+    public function getFinishedReports()
+    {
+        $reportTable = Report::TABLE_NAME;
+        $reportDocumentsTable = ReportDocument::TABLE_NAME;
+
+        $reportFinished = Report::where("status", "=", Report::FINISHED_STATUS)
+                            ->select("{$reportDocumentsTable}.*")
+                            ->join("{$reportDocumentsTable}", "report_id", "=", "{$reportTable}.id")
+                            ->orderBy("status", "asc")->get();
+
+        return $reportFinished->toArray();
+    }
+
+    public function getReportScores(Filters $filters, $paginate = false, $perPage = 15)
+    {
+        $reportTable = Report::TABLE_NAME;
+        $reportScoreTable = ReportScore::TABLE_NAME;
+
+        $reportScores = $this->reportScore->addSelect("{$reportScoreTable}.*")
+                                          ->addSelect("{$reportTable}.tool_name")
+                                          ->addSelect("{$reportTable}.site")
+                                          ->addSelect("{$reportTable}.tool_name")
+                                          ->join("{$reportTable}", "id", "=", "{$reportScoreTable}.id")
+                                          ->get();
+        return $reportScores->toArray();
+    }
+
+    public function getReportScoresByReportId($reportId)
+    {
+        $reportTable = Report::TABLE_NAME;
+        $reportScoreTable = ReportScore::TABLE_NAME;
+
+        $reportScores = $this->reportScore->where("{$reportScoreTable}.report_id", "=", $reportId)
+                                          ->addSelect("{$reportScoreTable}.*")
+                                          ->addSelect("{$reportTable}.tool_name")
+                                          ->addSelect("{$reportTable}.site")
+                                          ->addSelect("{$reportTable}.tool_name")
+                                          ->join("{$reportTable}", "id", "=", "{$reportScoreTable}.id")
+                                          ->first()
+                                          ->get();
+        return $reportScores->toArray();
     }
 
 }

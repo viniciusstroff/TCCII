@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Factories\AuditToolFactory\AuditToolFactory;
 use App\Helpers\Lighthouse;
 use App\Models\Report;
 use App\Repository\Interfaces\Report\ReportRepositoryInterface;
@@ -43,16 +44,16 @@ class ProcessAuditReports implements ShouldQueue
      *
      * @return void
      */
-    public function handle(ReportRepositoryInterface $reportRepository)
+    public function handle(ReportRepositoryInterface $reportRepository, AuditToolFactory $auditToolFactory)
     {       
         $this->reportRepository = $reportRepository;
             try{
-            $documentsData = [];
-            $lighthouse = new Lighthouse();
-            $lighthouse->build($this->report->site);
-            $lighthouse->setCategories(['accessibility', 'performance']);
-            $lighthouse->setTimeOut($this->timeout);
-            $lighthouse->audit();
+                $documentsData = [];
+                $lighthouse = new Lighthouse();
+                $lighthouse->build($this->report->site);
+                $lighthouse->setCategories(['accessibility', 'performance']);
+                $lighthouse->setTimeOut($this->timeout);
+                $lighthouse->audit();
 
             // if($lighthouse->hasFinished()){
                 $documentsData['file_fake_name'] = $lighthouse->getSite();

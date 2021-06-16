@@ -1,13 +1,17 @@
 import ReportList from './Reports/ReportList';
 import ReportAdd from './Reports/ReportAdd';
+import ReportScore from './Reports/ReportScore';
 import Example from './components/ExampleComponent';
 import ReportPendingList from './ReportsPending/ReportPendingList';
+import Dashboard from './Dashboard/Dashboard';
 
+
+//https://router.vuejs.org/guide/essentials/nested-routes.html agrupamento de rotas
 const routes = [
     {
         path: '/audits',
-        name: 'home',
-        component: Example
+        name: 'dashboard',
+        component: Dashboard
     },
     {
         path: '/reports',
@@ -23,6 +27,11 @@ const routes = [
         path: '/reports/report/:id',
         name: 'report-edit',
         component: ReportAdd
+    },
+    {
+        path: '/reports/report/:id/scores',
+        name: 'report-scores-show',
+        component: ReportScore
     },
     {
         path: '/report-pending',

@@ -10,9 +10,10 @@ class Filters implements ArrayAccess, IteratorAggregate, Countable
 {
     private $filters;
 
-    public function __construct(?Array $filters)
+    public function __construct(?Array $filters = [])
     {
-        $this->setFilters($filters);
+        // $this->setFilters($filters);
+        $this->filters = collect($filters);
     }
 
     public function getDate($fieldName)

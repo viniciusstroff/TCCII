@@ -23,13 +23,14 @@ class RepositoryServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(EloquentRepositoryInterface::class, BaseRepository::class);
-
+        
         $this->app->bind(ReportRepositoryInterface::class, ReportRepository::class);
 
-        $this->app->bind(ScoreRepositoryInteface::class, ScoreRepository::class);
+        
+        $this->app->bind(EloquentRepositoryInterface::class, BaseRepository::class);
 
-        $this->app->bind(ReportPendingRepositoryInterface::class, ReportPendingRepository::class);
+
+        $this->app->bind(ScoreRepositoryInteface::class, ScoreRepository::class);
 
         $this->app->bind(JobRepositoryInterface::class, JobRepository::class);
 

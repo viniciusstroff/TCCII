@@ -30,6 +30,11 @@
             :routes="{ name: 'report-edit', params: { id: row.item.id } }"
             :button-class="{ variant: 'primary', class: 'mb-3', size: 'sm' }"
           ></button-redirect>
+          <button-redirect v-if="row.item.status === 1"
+            :label="'Visualizar'"
+            :routes="{ name: 'report-scores-show', params: { id: row.item.id } }"
+            :button-class="{ variant: 'secondary', class: 'mb-4', size: 'sm' }"
+          ></button-redirect>
           <b-button variant="danger" @click="remove(row.item.id)" size="sm"
             >Deletar</b-button
           >
@@ -57,9 +62,9 @@
     </div>
     <b-row align-h="between">
       <b-col cols="6">
-        <b-button size="sm" @click="selectAllRows">Selecionar todos</b-button>
+        <!-- <b-button size="sm" @click="selectAllRows">Selecionar todos</b-button>
         <b-button size="sm" @click="clearSelected">Desmarcar</b-button>
-        <b-button size="sm" :disabled="disabled" variant="primary" @click="auditSelectedReports()">Auditar Selecionados</b-button>
+        <b-button size="sm" :disabled="disabled" variant="primary" @click="auditSelectedReports()">Auditar Selecionados</b-button> -->
       </b-col>
       <b-col cols="3">
         <b-pagination

@@ -1,5 +1,6 @@
 <template>
     <div>
+      <h4>:: {{isEditing ? 'Edição' : 'Cadastro'}} de Audição ::</h4>
       <report-form @reports="getReports($event)" @form="getForm($event)" :errors="errors"></report-form>
       <!-- <div v-if="!isEditing">
       <b-pagination v-model="table.currentPage" :per-page="table.perPage" :total-rows="reports.length"></b-pagination>

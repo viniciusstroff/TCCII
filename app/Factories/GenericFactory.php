@@ -2,8 +2,6 @@
 
 namespace App\Factories;
 
-
-
 class GenericFactory {
 
     public function __construct()
@@ -13,8 +11,6 @@ class GenericFactory {
 
     public function getInstance($class,  $data = [])
     {
-        return new $class($data);
-
-        // return app($class, $data);
+        return app($class, $data);
     }
 }

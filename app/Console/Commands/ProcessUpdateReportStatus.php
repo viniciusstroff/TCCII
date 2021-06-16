@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Repository\Interfaces\Report\ReportRepositoryInterface;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ProcessUpdateReportStatus extends Command
@@ -50,13 +51,11 @@ class ProcessUpdateReportStatus extends Command
             $pendingReports = $this->reportRepository->getPendingReports();
             foreach($pendingReports as $report){
                 $reportsStorage = "reports".$report['file_name'];
-                if(Storage::disk()->exists($reportsStorage)){
+                if(Storage::disk()->exists($reportsStorage))
                     $this->reportRepository->updateReportStatus($report['id'], $status = 1);
-                }
 
-                if(Storage::disk()->missing($reportsStorage)){
-
-                }
+                if(Storage::disk()->missing($reportsStorage))
+                    Log::notice("[ProcessUpdateReportStatus] Arquivo {$reportsStorage} não existe", $report);
             }
         // }
             

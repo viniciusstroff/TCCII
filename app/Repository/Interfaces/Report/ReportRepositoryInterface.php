@@ -2,9 +2,8 @@
 
 namespace App\Repository\Interfaces\Report;
 
-use App\Models\Report;
+use App\DTOs\Reports\ReportScoreDTO;
 use App\VOs\Filters;
-use Illuminate\Http\Request;
 
 interface ReportRepositoryInterface {
 
@@ -16,4 +15,8 @@ interface ReportRepositoryInterface {
     public function searchByFilters(Filters $filters, $paginate = false, $perPage = 15);
     public function getPendingReports();    
     public function updateReportStatus($id, $status = 1);
+    public function getFinishedReports();
+    public function saveReportScore(ReportScoreDTO $reportScoreDTO);
+    public function getReportScores(Filters $filters, $paginate = false, $perPage = 15);
+    public function getReportScoresByReportId($reportId);
 }

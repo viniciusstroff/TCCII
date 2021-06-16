@@ -6,6 +6,7 @@ use App\Jobs\ProcessUpdateReportStatus;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\DB;
+//php artisan schedule:work
 
 class Kernel extends ConsoleKernel
 {
@@ -17,7 +18,6 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Commands\ProcessUpdateReportStatus::class,
     ];
-
     /**
      * Define the application's command schedule.
      *
@@ -26,14 +26,16 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        //php artisan schedule:work
         $logPath = storage_path("logs/kernel/kernel".date('Y-m-d').".log");
-        $schedule->command('queue:work', ['--queue' => 'audits', '--max-jobs' => 1 , '--timeout' => 120])
+        $schedule->command('queue:work', 
+                                    ['--queue' => 'audits',
+                                     '--max-jobs' => 1 ,
+                                    '--timeout' => 120
+                                    ])
                             ->everyTwoMinutes()
                             ->appendOutputTo($logPath);
 
-        $schedule->command('reports:is_finished')->everyMinute()->appendOutputTo( storage_path("logs/kernel/teste123.log"));        
-
+        $schedule->command('reports:is_finished')->everyMinute()->appendOutputTo($logPath);        
     }
 
     /**

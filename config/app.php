@@ -135,6 +135,10 @@ return [
     */
 
     'providers' => [
+        /*
+         * TCC Service Providers...
+         */
+        App\Providers\RepositoryServiceProvider::class,
 
         /*
          * Laravel Framework Service Providers...
@@ -174,12 +178,8 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        App\Providers\TelescopeServiceProvider::class,
+        App\Providers\TelescopeServiceProvider::class
 
-         /*
-         * TCC Service Providers...
-         */
-        App\Providers\RepositoryServiceProvider::class,
     ],
 
     /*
