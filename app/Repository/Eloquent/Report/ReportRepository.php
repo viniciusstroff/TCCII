@@ -66,8 +66,7 @@ class ReportRepository implements ReportRepositoryInterface {
            
             $isEditing = CreateRegisterHelper::isEditing($request, 'id');
             if($isEditing){
-                $report = $this->find($request['id']);
-                $report->update($request);
+                $report = $this->report->where(['id' => $request['id']])->update($request);
             } else {
                 $report = $this->report->create($request);
 

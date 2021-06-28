@@ -29,13 +29,15 @@ class Kernel extends ConsoleKernel
         $logPath = storage_path("logs/kernel/kernel".date('Y-m-d').".log");
         $schedule->command('queue:work', 
                                     ['--queue' => 'audits',
-                                     '--max-jobs' => 1 ,
+                                     '--max-jobs' => 3 ,
                                     '--timeout' => 120
                                     ])
                             ->everyTwoMinutes()
                             ->appendOutputTo($logPath);
 
-        $schedule->command('reports:is_finished')->everyMinute()->appendOutputTo($logPath);        
+        $schedule->command('reports:is_finished')->everyMinute()->appendOutputTo($logPath);   
+        
+        $schedule->command('reports:insert_score')->everyMinute()->appendOutputTo($logPath);
     }
 
     /**

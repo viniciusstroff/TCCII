@@ -62,12 +62,13 @@ class ProcessInsertReportScore extends Command
                     Log::notice("[ProccessInsertReportScore] Arquivo {$reportsStorage} não existe", $report);
                     continue;
                 }
+
                 $content = Storage::disk('local')->get($reportsStorage);
                 $arrayContent =  json_decode($content, true);
                 $reportScoreDTO = $this->genericFactory->getInstance(ReportScoreDTO::class, 
                 [
                     'scores' => $arrayContent,
-                    'reportId' => $report['id']
+                    'reportId' => $report['report_id']
                 ]);
                 $this->reportRepository->saveReportScore($reportScoreDTO);
             }

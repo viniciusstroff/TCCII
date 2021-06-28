@@ -5,6 +5,7 @@ use App\Console\Process;
 use App\Exceptions\AuditFailedException;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use phpDocumentor\Reflection\Types\Boolean;
 use Spatie\Async\Pool;
@@ -165,7 +166,7 @@ class Lighthouse {
         return $this->hasFinished;
     }
 
-    public function getCommand(String $url)
+    public function getCommand(String $url) : array
     {
         if ($this->configPath === null || $this->config !== null) {
             $this->buildConfig();
@@ -329,11 +330,11 @@ class Lighthouse {
                 // $pool = Pool::create();
 
                 // $pool->add(function() use($command){
-                  
                         $process = new Process($command);
                         $process->setTimeout($this->timeout);
                         
                         $results = $process->run();
+                        Log::info("[LIGHTHOUSE] comando executado: ". json_encode($command));
                 //     return $results;
                 // })->then(function ($results)  {
                 //     // dd($results);
@@ -348,7 +349,7 @@ class Lighthouse {
             
             return $results;
         }catch(\Exception $e){
-            dd($e->getMessage());
+            Log::error("[LIGHTHOUSE] {$e->getMessage()}");
         }   
         return $this;
     }

@@ -23,12 +23,12 @@ Route::get('{any}', function () {
 // Route::get('/', function () {
 //     return view('welcome');
 // });
-Route::resource('contacts', ContactController::class);
+// Route::resource('contacts', ContactController::class);
 
-// Auth::routes();
+// // Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('audits/', function () {
-    return view('audits.index');
-});
+// Route::get('audits/', function () {
+//     return view('audits.index');
+// });

@@ -5,13 +5,13 @@ namespace App\Providers;
 use App\Repository\Eloquent\BaseRepository;
 use App\Repository\Eloquent\Jobs\JobRepository;
 use App\Repository\Eloquent\Report\ReportRepository;
+use App\Repository\Eloquent\Report\ReportScoreRepository;
 use App\Repository\Eloquent\ReportPending\ReportPendingRepository;
-use App\Repository\Eloquent\ScoreRepository;
 use App\Repository\EloquentRepositoryInterface;
 use App\Repository\Interfaces\Jobs\JobRepositoryInterface;
 use App\Repository\Interfaces\Report\ReportRepositoryInterface;
+use App\Repository\Interfaces\Report\ReportScoreRepositoryInterface;
 use App\Repository\Interfaces\ReportPending\ReportPendingRepositoryInterface;
-use App\Repository\ScoreRepositoryInteface;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -30,7 +30,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(EloquentRepositoryInterface::class, BaseRepository::class);
 
 
-        $this->app->bind(ScoreRepositoryInteface::class, ScoreRepository::class);
+        $this->app->bind(ReportScoreRepositoryInterface::class, ReportScoreRepository::class);
 
         $this->app->bind(JobRepositoryInterface::class, JobRepository::class);
 

@@ -6,20 +6,21 @@ use App\Factories\GenericFactory;
 use App\Http\Requests\ReportRequest;
 use App\Repository\Interfaces\Jobs\JobRepositoryInterface;
 use App\Repository\Interfaces\Report\ReportRepositoryInterface;
+use App\Repository\Interfaces\Report\ReportScoreRepositoryInterface;
 use App\VOs\Filters;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 
 class ReportScoreController extends BaseApiController
 {
-    private $reportRepository;
+    private $reportScoreRepository;
     private $genericFactory;
 
     public function  __construct(
-        ReportRepositoryInterface $reportRepository, 
+        ReportScoreRepositoryInterface $reportScoreRepository, 
         GenericFactory $genericFactory)
     {
-        $this->reportRepository = $reportRepository;
+        $this->reportScoreRepository = $reportScoreRepository;
         $this->genericFactory = $genericFactory;
     }
 
@@ -27,7 +28,7 @@ class ReportScoreController extends BaseApiController
     {
         try
         {
-            $reports = $this->reportRepository->all();
+            $reports = $this->reportScoreRepository->all();
         } catch (\Exception $e) {
             return $this->sendError($e->getMessage());
         }
@@ -35,23 +36,21 @@ class ReportScoreController extends BaseApiController
         return $this->sendResponse($reports, "Lista de relatórios");
 
     }
-    
-    public function show($id)
+
+    public function show($reportId)
     {
         try{
-            $report = $this->reportRepository->find($id);
-            
+            $reportScore = $this->reportScoreRepository->findByReport($reportId);
         } catch (\Exception $e){
-            return $this->sendResponse("Erro", "{$e->getMessage()}");
+            return $this->sendResponse([], "{$e->getMessage()}");
         }
-        return $this->sendResponse($report, "Dados do relatório carregados com sucesso");
+        return $this->sendResponse($reportScore, "Dados da pontuações do relatório carregados com sucesso");
     }
 
     public function search(Request $request)
     {
         
         $this->reportRepository->getFinishedReports();
-        $filters = ($request->has('filters')) ? $request->input('filters') : [];
         
         try {
             $filters = $this->genericFactory->getInstance(Filters::class, ['filters' => $filters]);
